@@ -1,0 +1,2 @@
+* * * * * www-data cd /var/www/html && php artisan schedule:run >> /dev/null 2>&1
+0 2 * * * www-data cd /var/www/html && php artisan backup:run >> /var/log/backup.log 2>&1

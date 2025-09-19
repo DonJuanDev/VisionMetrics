@@ -1,0 +1,158 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:stable
+    container_name: visionmetrics_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx/conf.d:/etc/nginx/conf.d
+      - ./deploy/nginx/certs:/etc/letsencrypt
+      - ./backend/public:/var/www/html/public
+      - ./frontend/dist:/var/www/html/frontend/dist
+    depends_on:
+      - app
+    networks:
+      - visionmetrics
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.php
+    container_name: visionmetrics_app
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - APP_DEBUG=${APP_DEBUG:-false}
+      - APP_KEY=${APP_KEY}
+      - DB_HOST=db
+      - DB_DATABASE=${DB_DATABASE:-visionmetrics}
+      - DB_USERNAME=${DB_USERNAME:-visionmetrics}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_HOST=redis
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+    volumes:
+      - ./backend:/var/www/html
+      - ./storage/app:/var/www/html/storage/app
+      - ./storage/logs:/var/www/html/storage/logs
+    depends_on:
+      - db
+      - redis
+    networks:
+      - visionmetrics
+
+  queue:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.php
+    container_name: visionmetrics_queue
+    command: php artisan queue:work --tries=3 --timeout=90 --memory=512
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - APP_KEY=${APP_KEY}
+      - DB_HOST=db
+      - DB_DATABASE=${DB_DATABASE:-visionmetrics}
+      - DB_USERNAME=${DB_USERNAME:-visionmetrics}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_HOST=redis
+    volumes:
+      - ./backend:/var/www/html
+    depends_on:
+      - db
+      - redis
+    networks:
+      - visionmetrics
+
+  cron:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.php
+    container_name: visionmetrics_cron
+    command: cron -f
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - APP_KEY=${APP_KEY}
+      - DB_HOST=db
+      - DB_DATABASE=${DB_DATABASE:-visionmetrics}
+      - DB_USERNAME=${DB_USERNAME:-visionmetrics}
+      - DB_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./backend:/var/www/html
+      - ./deploy/cron/laravel-cron:/etc/cron.d/laravel-cron
+    depends_on:
+      - db
+      - redis
+    networks:
+      - visionmetrics
+
+  db:
+    image: mysql:8.0
+    container_name: visionmetrics_db
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-visionmetrics}
+      MYSQL_USER: ${DB_USERNAME:-visionmetrics}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    networks:
+      - visionmetrics
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: visionmetrics_phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: ${DB_ROOT_PASSWORD}
+      PMA_ARBITRARY: 1
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    networks:
+      - visionmetrics
+
+  redis:
+    image: redis:7-alpine
+    container_name: visionmetrics_redis
+    volumes:
+      - redisdata:/data
+    networks:
+      - visionmetrics
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 10s
+      retries: 5
+
+  node:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.node
+    container_name: visionmetrics_node
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "5173:5173"
+    networks:
+      - visionmetrics
+
+volumes:
+  dbdata:
+  redisdata:
+
+networks:
+  visionmetrics:
+    driver: bridge

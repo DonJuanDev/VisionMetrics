@@ -1,0 +1,82 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.staging
+
+# Build outputs
+dist/
+build/
+
+# Logs
+*.log
+logs/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Cache
+.cache/
+.parcel-cache/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Database
+*.sqlite
+*.db
+
+# Storage
+storage/app/*
+!storage/app/.gitkeep
+storage/framework/cache/*
+!storage/framework/cache/.gitkeep
+storage/framework/sessions/*
+!storage/framework/sessions/.gitkeep
+storage/framework/views/*
+!storage/framework/views/.gitkeep
+storage/logs/*
+!storage/logs/.gitkeep
+
+# Personal files (não enviar para o GitHub)
+*.exe
+*.zip
+CURRICULOS/
+Call of Duty/
+FC 24/
+My Games/
+Rockstar Games/
+Medal/
+BotAmericanCut/
+IA AMERICAN/
+AutomaticSolution Software/
+Eletrovel/
+teste/
+scripts/
+data/
+public_html/
+VisionMetricsApp-main/
+
+# Ignore files outside project directory
+../*
+!../VisionMetrics/
+
+# Ignore all files in parent directory
+../*
