@@ -1,0 +1,134 @@
+# Docker Compose file for VisionMetrics
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: visionmetrics-app
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    volumes:
+      - .:/var/www/html
+      - ./uploads:/var/www/html/uploads
+      - ./logs:/var/www/html/logs
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - APP_URL=${APP_URL:-http://localhost:3000}
+      - DB_HOST=mysql
+      - DB_NAME=${DB_NAME:-visionmetrics}
+      - DB_USER=${DB_USER:-visionmetrics}
+      - DB_PASS=${DB_PASS:-visionmetrics}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - ADAPTER_MODE=${ADAPTER_MODE:-simulate}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/backend/healthz.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - visionmetrics
+
+  mysql:
+    image: mysql:8.0
+    container_name: visionmetrics-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+      MYSQL_DATABASE: ${DB_NAME:-visionmetrics}
+      MYSQL_USER: ${DB_USER:-visionmetrics}
+      MYSQL_PASSWORD: ${DB_PASS:-visionmetrics}
+      MYSQL_ROOT_HOST: '%'
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./sql/migrations/add_missing_tables.sql:/docker-entrypoint-initdb.d/02-migrations.sql
+      - ./sql/seed.sql:/docker-entrypoint-initdb.d/03-seed.sql
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+    networks:
+      - visionmetrics
+
+  redis:
+    image: redis:7-alpine
+    container_name: visionmetrics-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - visionmetrics
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: visionmetrics-worker
+    restart: unless-stopped
+    command: php /var/www/html/worker/process_jobs.php
+    volumes:
+      - .:/var/www/html
+      - ./logs:/var/www/html/logs
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - DB_HOST=mysql
+      - DB_NAME=${DB_NAME:-visionmetrics}
+      - DB_USER=${DB_USER:-visionmetrics}
+      - DB_PASS=${DB_PASS:-visionmetrics}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - ADAPTER_MODE=${ADAPTER_MODE:-simulate}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - visionmetrics
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: visionmetrics-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: ${DB_USER:-visionmetrics}
+      PMA_PASSWORD: ${DB_PASS:-visionmetrics}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - visionmetrics
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  visionmetrics:
+    driver: bridge

@@ -1,0 +1,180 @@
+═══════════════════════════════════════════════════════════
+  VISIONMETRICS - GUIA RÁPIDO DE USO
+═══════════════════════════════════════════════════════════
+
+🚀 INICIAR O SISTEMA:
+
+1. docker-compose up -d
+2. Acessar: http://localhost:3000
+3. Login: demo@visionmetrics.com / demo123
+
+═══════════════════════════════════════════════════════════
+📱 MENU PRINCIPAL (7 seções principais):
+═══════════════════════════════════════════════════════════
+
+1. DASHBOARD
+   - Métricas em tempo real
+   - Gráficos de conversão
+   - Atualiza automaticamente a cada 5s
+
+2. LEADS
+   - Visualização: Lista ou Kanban
+   - Filtros: busca, etapa, tags
+   - Exportar dados
+   - Ver perfil 360° do lead
+
+3. CONVERSAS
+   - Histórico WhatsApp
+   - Detecção automática de vendas
+   - Timeline de mensagens
+
+4. VENDAS
+   - Relatório de vendas
+   - ROI por campanha
+   - Faturamento
+
+5. AUTOMAÇÃO
+   ├─ Workflows: Automações baseadas em gatilhos
+   └─ Tarefas: Gestão de tarefas por lead
+
+6. ANALYTICS
+   ├─ Atribuição Multi-Touch: 6 modelos diferentes
+   ├─ Funil de Conversão: Taxas por etapa
+   └─ Coortes: Análise temporal
+
+7. CONFIGURAÇÕES
+   ├─ Geral: Workspace
+   ├─ Billing: Planos e assinaturas
+   ├─ Membros: Usuários do workspace
+   ├─ Integrações: Meta Ads, GA4
+   ├─ WhatsApp: Números conectados
+   ├─ Tags: Etiquetas coloridas
+   ├─ Campos: Campos customizados
+   ├─ Links & QR: Rastreamento
+   ├─ API Keys: Acesso programático
+   └─ LGPD: Compliance e privacidade
+
+═══════════════════════════════════════════════════════════
+🎯 FUNCIONALIDADES PRINCIPAIS:
+═══════════════════════════════════════════════════════════
+
+✅ TRACKING
+   - Capture eventos automaticamente
+   - UTMs, Click IDs (fbclid, gclid)
+   - Formulários, cliques, scroll
+
+✅ LEADS
+   - CRM completo
+   - Perfil 360° com timeline
+   - Lead scoring automático
+   - Tags coloridas
+   - Campos customizados
+   - Notas
+
+✅ KANBAN
+   - Drag & drop entre etapas
+   - 7 estágios do funil
+   - Confetti ao ganhar! 🎉
+
+✅ ATRIBUIÇÃO
+   - First Touch
+   - Last Touch
+   - Linear
+   - Time Decay
+   - Position-Based
+   - Last Non-Direct
+
+✅ INTEGRAÇÕES
+   - Meta Ads CAPI (server-side)
+   - Google Analytics 4
+   - WhatsApp tracking
+   - Webhooks
+
+✅ AUTOMAÇÃO
+   - Workflows automáticos
+   - Tarefas com prazo
+   - Notificações
+
+✅ EXPORTAÇÃO
+   - CSV (Excel)
+   - Excel (.xls)
+   - PDF
+   - Escolher colunas
+
+✅ FERRAMENTAS
+   - Links rastreáveis
+   - QR Codes
+   - Real-time dashboard
+
+✅ COMPLIANCE
+   - LGPD/GDPR
+   - Cookie consent
+   - Exportação de dados
+   - Right to Erasure
+
+═══════════════════════════════════════════════════════════
+⚡ ATALHOS RÁPIDOS:
+═══════════════════════════════════════════════════════════
+
+Dashboard:              /dashboard.php
+Leads Lista:            /leads.php?view=list
+Leads Kanban:           /leads.php?view=kanban
+Perfil do Lead:         /lead-profile.php?id=1
+Conversas:              /conversations.php
+Vendas:                 /sales.php
+Tarefas:                /automation.php?tab=tasks
+Workflows:              /automation.php?tab=workflows
+Atribuição:             /analytics.php?tab=attribution
+Configurações:          /settings.php
+
+═══════════════════════════════════════════════════════════
+🔧 CONFIGURAÇÃO INICIAL:
+═══════════════════════════════════════════════════════════
+
+1. Configurações > Billing: Escolher plano
+2. Configurações > Integrações: Conectar Meta Ads / GA4
+3. Configurações > WhatsApp: Conectar número
+4. Configurações > Tags: Criar tags
+5. Configurações > API Keys: Gerar chave
+6. Adicionar script no site com sua API key
+
+═══════════════════════════════════════════════════════════
+📊 ARQUITETURA LIMPA:
+═══════════════════════════════════════════════════════════
+
+backend/
+├── *.php (páginas principais)
+├── views/ (visualizações organizadas)
+│   ├── settings/ (abas de configurações)
+│   ├── tasks-view.php
+│   ├── workflows-view.php
+│   └── attribution-view.php
+├── handlers/ (lógica de negócio)
+│   ├── tasks-handler.php
+│   ├── attribution-handler.php
+│   └── ...
+├── partials/ (componentes)
+│   └── header.php
+├── integrations/ (integrações externas)
+│   ├── meta-ads.php
+│   └── google-analytics.php
+└── api/ (endpoints API)
+
+frontend/
+├── css/ (estilos organizados)
+│   ├── style.css (principal)
+│   └── kanban.css (kanban)
+└── js/ (scripts organizados)
+    ├── app.js (principal)
+    ├── charts.js (gráficos)
+    ├── kanban.js (drag&drop)
+    └── realtime-dashboard.js (real-time)
+
+═══════════════════════════════════════════════════════════
+
+TUDO ORGANIZADO, LIMPO E PROFISSIONAL! ✨
+
+
+
+
+

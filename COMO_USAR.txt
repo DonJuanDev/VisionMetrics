@@ -1,0 +1,195 @@
+═══════════════════════════════════════════════════════════
+  VISIONMETRICS - GUIA DE USO COMPLETO
+═══════════════════════════════════════════════════════════
+
+🎉 PARABÉNS! VOCÊ TEM UM SAAS PROFISSIONAL!
+
+═══════════════════════════════════════════════════════════
+🚀 INICIAR O SISTEMA (3 PASSOS):
+═══════════════════════════════════════════════════════════
+
+1. make install
+2. Aguardar 30 segundos
+3. Acessar: http://localhost:3000
+
+Login: demo@visionmetrics.com
+Senha: demo123
+
+═══════════════════════════════════════════════════════════
+⚡ CONFIGURAÇÃO INICIAL (IMPORTANTE!):
+═══════════════════════════════════════════════════════════
+
+PASSO 1: Conectar WhatsApp
+   → Ir em: WhatsApp (menu lateral)
+   → Clicar: "Conectar Novo Número"
+   → Preencher: Nome + Número
+   → Salvar ✅
+
+PASSO 2: Configurar Meta Ads
+   → Ir em: Configurações > Integrações
+   → Seção Meta Ads (azul)
+   → Colar: Access Token
+   → Colar: Pixel ID
+   → Salvar ✅
+
+PASSO 3: Configurar Google Analytics 4
+   → Ir em: Configurações > Integrações
+   → Seção GA4 (laranja)
+   → Colar: Measurement ID (G-XXXXXX)
+   → Colar: API Secret
+   → Salvar ✅
+
+═══════════════════════════════════════════════════════════
+📱 USAR NO DIA A DIA:
+═══════════════════════════════════════════════════════════
+
+DASHBOARD (tempo real!)
+   • Ver métricas atualizando sozinhas
+   • Indicador "Ao Vivo" pulsando
+   • Conversas por origem
+   • Atividade recente
+
+CONVERSAS
+   • Ver todas as conversas WhatsApp
+   • Filtrar por Meta Ads, Google Ads
+   • Buscar por nome/telefone
+   • Ver origem visual
+
+LINKS RASTREÁVEIS
+   • Criar link curto
+   • Copiar link (botão 📋)
+   • Baixar QR Code (botão 📱)
+   • Ver estatísticas
+
+JORNADA DE COMPRA
+   • Ver funil de vendas
+   • 4 etapas visuais
+   • Conversas por etapa
+
+RELATÓRIOS
+   • Gerar Conversas (CSV)
+   • Gerar GCLID (importar no Google Ads)
+   • Histórico de Vendas
+   • Download instantâneo
+
+═══════════════════════════════════════════════════════════
+🔗 CRIAR LINK RASTREÁVEL:
+═══════════════════════════════════════════════════════════
+
+1. Ir em: Links Rastreáveis
+2. Clicar: "+ Criar Novo Link"
+3. Preencher:
+   - Nome: "Campanha Black Friday"
+   - URL Destino: https://seusite.com/produto
+   - Slug: (deixar vazio para auto-gerar)
+4. Salvar
+5. Copiar link gerado
+6. Baixar QR Code se quiser
+
+USAR O LINK:
+   • Em anúncios do Meta Ads
+   • Em anúncios do Google
+   • Em materiais impressos (com QR Code)
+   • Em bio do Instagram
+
+═══════════════════════════════════════════════════════════
+📊 ENTENDER ATRIBUIÇÃO:
+═══════════════════════════════════════════════════════════
+
+Ir em: Jornada de Compra ou Eventos de Conversão
+
+MODELOS DISPONÍVEIS (automático):
+   • First Touch: Primeiro toque ganha crédito
+   • Last Touch: Último toque ganha crédito
+   • Linear: Crédito dividido igualmente
+   • Time Decay: Mais recente pesa mais
+   • Position-Based: 40% primeiro, 40% último, 20% meio
+
+═══════════════════════════════════════════════════════════
+📤 EXPORTAR DADOS:
+═══════════════════════════════════════════════════════════
+
+RELATÓRIOS:
+   1. Ir em: Relatórios
+   2. Escolher tipo:
+      • Conversas (CSV)
+      • GCLID (para Google Ads)
+      • Vendas
+   3. Clicar: "Gerar e Baixar"
+   4. Arquivo baixa automaticamente
+
+═══════════════════════════════════════════════════════════
+🏷️ ORGANIZAR COM TAGS:
+═══════════════════════════════════════════════════════════
+
+1. Ir em: Configurações > Tags
+2. Criar tag colorida
+3. Aplicar em leads
+4. Filtrar por tag
+
+═══════════════════════════════════════════════════════════
+⚡ AUTOMAÇÕES (BETA):
+═══════════════════════════════════════════════════════════
+
+1. Ir em: Workflows (menu)
+2. Criar nova automação
+3. Escolher gatilho:
+   - Novo Lead
+   - Score Alto
+   - Venda Confirmada
+4. Escolher ação:
+   - Notificação
+   - Webhook
+   - Tag
+   - Tarefa
+5. Ativar!
+
+═══════════════════════════════════════════════════════════
+🎯 MONITORAR EM TEMPO REAL:
+═══════════════════════════════════════════════════════════
+
+DASHBOARD:
+   • Deixar aberto
+   • Números atualizam automaticamente
+   • Ver "Ao Vivo" pulsando = sistema funcionando
+   • Última atualização embaixo
+
+═══════════════════════════════════════════════════════════
+🛠️ COMANDOS ÚTEIS:
+═══════════════════════════════════════════════════════════
+
+make up          Iniciar
+make down        Parar
+make logs        Ver o que está acontecendo
+make health      Verificar se está tudo ok
+make test        Rodar testes
+make shell       Abrir terminal no sistema
+
+═══════════════════════════════════════════════════════════
+✅ CHECKLIST DIÁRIO:
+═══════════════════════════════════════════════════════════
+
+□ Dashboard abrindo?
+□ Indicador "Ao Vivo" pulsando?
+□ Conversas aparecendo?
+□ Integrações conectadas? (badges verdes)
+□ Worker processando? (ver Disparos de Pixel)
+
+═══════════════════════════════════════════════════════════
+🔥 DICAS PRO:
+═══════════════════════════════════════════════════════════
+
+1. Use links rastreáveis SEMPRE
+2. Configure webhooks para automação
+3. Monitore "Disparos de Pixel" diariamente
+4. Exporte GCLID para Google Ads semanalmente
+5. Revise Jornada de Compra para otimizar funil
+
+═══════════════════════════════════════════════════════════
+
+TUDO PRONTO! COMECE A VENDER! 🚀💰
+
+═══════════════════════════════════════════════════════════
+
+
+

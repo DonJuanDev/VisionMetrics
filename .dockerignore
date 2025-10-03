@@ -1,0 +1,12 @@
+.git
+.gitignore
+README.md
+COMO_RODAR.md
+EXECUTAR_AGORA.md
+.env
+.DS_Store
+*.log
+node_modules/
+vendor/
+.idea/
+.vscode/

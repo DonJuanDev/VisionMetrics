@@ -1,0 +1,416 @@
+.container-fluid {
+    max-width: 100%;
+    padding: 32px;
+}
+
+.kanban-board {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+    min-height: calc(100vh - 200px);
+}
+
+/* Custom scrollbar */
+.kanban-board::-webkit-scrollbar {
+    height: 8px;
+}
+
+.kanban-board::-webkit-scrollbar-track {
+    background: #F3F4F6;
+    border-radius: 4px;
+}
+
+.kanban-board::-webkit-scrollbar-thumb {
+    background: #D1D5DB;
+    border-radius: 4px;
+}
+
+.kanban-board::-webkit-scrollbar-thumb:hover {
+    background: #9CA3AF;
+}
+
+.kanban-column {
+    min-width: 320px;
+    max-width: 340px;
+    background: #F9FAFB;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #E5E7EB;
+}
+
+.kanban-column-header {
+    padding: 16px 20px;
+    border-radius: 12px 12px 0 0;
+    color: white;
+    font-weight: 600;
+}
+
+/* Stage Colors - Clean and Professional */
+.stage-novo {
+    background: #6B7280;
+}
+
+.stage-contatado {
+    background: #3B82F6;
+}
+
+.stage-qualificado {
+    background: #8B5CF6;
+}
+
+.stage-proposta {
+    background: #F59E0B;
+}
+
+.stage-negociacao {
+    background: #EF4444;
+}
+
+.stage-ganho {
+    background: #10B981;
+}
+
+.stage-perdido {
+    background: #DC2626;
+}
+
+.kanban-column-header h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.kanban-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 12px;
+    opacity: 0.95;
+}
+
+.kanban-column-body {
+    flex: 1;
+    padding: 12px;
+    overflow-y: auto;
+    min-height: 200px;
+}
+
+/* Custom scrollbar for column body */
+.kanban-column-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.kanban-column-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.kanban-column-body::-webkit-scrollbar-thumb {
+    background: #D1D5DB;
+    border-radius: 3px;
+}
+
+.kanban-column-body::-webkit-scrollbar-thumb:hover {
+    background: #9CA3AF;
+}
+
+.kanban-card {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid #E5E7EB;
+    cursor: move;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kanban-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    border-color: #D1D5DB;
+}
+
+.kanban-card:active {
+    cursor: grabbing;
+}
+
+.kanban-card.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+}
+
+.kanban-card.drag-over {
+    border: 2px dashed #4F46E5;
+    background: #EEF2FF;
+}
+
+.kanban-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.kanban-card-header strong {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.lead-score {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.score-high {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.score-medium {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.score-low {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.kanban-card-body {
+    font-size: 13px;
+}
+
+.card-info {
+    margin-bottom: 6px;
+    color: #6B7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 13px;
+}
+
+.card-stats {
+    display: flex;
+    gap: 12px;
+    margin: 12px 0;
+    padding-top: 12px;
+    border-top: 1px solid #F3F4F6;
+}
+
+.card-stats span {
+    font-size: 12px;
+    color: #6B7280;
+    font-weight: 500;
+}
+
+.card-footer {
+    padding-top: 12px;
+    border-top: 1px solid #F3F4F6;
+    margin-top: 12px;
+}
+
+.card-footer small {
+    font-size: 12px;
+    color: #9CA3AF;
+}
+
+.kanban-empty {
+    text-align: center;
+    padding: 48px 20px;
+    color: #9CA3AF;
+}
+
+.kanban-empty p {
+    font-size: 13px;
+}
+
+/* Drag and drop feedback */
+.column-drag-over {
+    background: #EEF2FF;
+    border-color: #4F46E5;
+}
+
+.can-drop {
+    position: relative;
+}
+
+.can-drop::after {
+    content: 'Solte aqui';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(79, 70, 229, 0.1);
+    color: #4F46E5;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+.column-drag-over::after {
+    opacity: 1;
+}
+
+/* Loading spinner */
+.card-loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.card-loading-spinner .spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #E5E7EB;
+    border-top-color: #4F46E5;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Success/Error animations */
+.drop-success {
+    animation: successPulse 0.4s ease;
+}
+
+.drop-error {
+    animation: errorShake 0.4s ease;
+}
+
+@keyframes successPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.03);
+    }
+}
+
+@keyframes errorShake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-8px);
+    }
+    75% {
+        transform: translateX(8px);
+    }
+}
+
+/* Toast Notifications */
+.kanban-toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.kanban-toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    padding: 16px 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    min-width: 320px;
+    border: 1px solid #E5E7EB;
+    transform: translateX(400px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kanban-toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.kanban-toast-success {
+    border-left: 4px solid #10B981;
+}
+
+.kanban-toast-error {
+    border-left: 4px solid #EF4444;
+}
+
+.kanban-toast-info {
+    border-left: 4px solid #3B82F6;
+}
+
+.kanban-toast .toast-message {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: #111827;
+}
+
+/* Confetti */
+.confetti {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 9999;
+    animation: confettiFall 1s ease-out forwards;
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--vx), var(--vy)) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 20px;
+    }
+    
+    .kanban-board {
+        gap: 16px;
+    }
+    
+    .kanban-column {
+        min-width: 280px;
+        max-width: 300px;
+    }
+    
+    .kanban-column-header {
+        padding: 14px 16px;
+    }
+    
+    .kanban-column-header h3 {
+        font-size: 13px;
+    }
+}
