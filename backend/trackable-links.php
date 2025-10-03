@@ -25,7 +25,7 @@ if (isset($_GET['qr']) && isset($_GET['link_id'])) {
     if ($link) {
         $shortUrl = APP_URL . '/l/' . $link['slug'];
         $qrUrl = 'https://chart.googleapis.com/chart?cht=qr&chs=400x400&chl=' . urlencode($shortUrl);
-        
+                                                                                                                                                                                2     
         // Download QR Code
         header('Content-Type: image/png');
         header('Content-Disposition: attachment; filename="qr-' . $link['slug'] . '.png"');
