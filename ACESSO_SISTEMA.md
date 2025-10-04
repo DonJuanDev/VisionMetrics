@@ -194,3 +194,4 @@ Escolha uma opção:
 - 🔐 Login com admin (admin@visionmetrics.com / password)
 
 **Tudo pronto para uso! 🚀**
+

@@ -26,3 +26,4 @@ Write-Host ""
 Write-Host "📝 Para ver os logs:" -ForegroundColor Yellow
 Write-Host "   docker-compose logs -f app" -ForegroundColor White
 Write-Host ""
+

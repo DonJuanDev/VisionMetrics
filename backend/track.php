@@ -121,6 +121,12 @@ $referrer = $data['referrer'] ?? $_SERVER['HTTP_REFERER'] ?? null;
 $userAgent = $data['user_agent'] ?? $_SERVER['HTTP_USER_AGENT'] ?? null;
 $ipAddress = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? null;
 
+// Get geolocation
+$geoData = getGeolocationFromIP($ipAddress);
+$country = $geoData['country'];
+$region = $geoData['region'];
+$city = $geoData['city'];
+
 // Fingerprint para deduplicação
 $fingerprint = hash('sha256', $ipAddress . $userAgent . ($email ?? ''));
 
@@ -170,17 +176,17 @@ $stmt = $db->prepare("
         page_url, referrer,
         utm_source, utm_medium, utm_campaign, utm_term, utm_content,
         gclid, fbclid, ttclid,
-        user_agent, ip_address, fingerprint, idempotency_key,
-        raw_data
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        user_agent, ip_address, country, region, city,
+        fingerprint, idempotency_key, raw_data
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ");
 $stmt->execute([
     $workspaceId, $leadId, $eventType, $eventName,
     $pageUrl, $referrer,
     $utmSource, $utmMedium, $utmCampaign, $utmTerm, $utmContent,
     $gclid, $fbclid, $ttclid,
-    $userAgent, $ipAddress, $fingerprint, $idempotencyKey,
-    $body
+    $userAgent, $ipAddress, $country, $region, $city,
+    $fingerprint, $idempotencyKey, $body
 ]);
 $eventId = $db->lastInsertId();
 

@@ -105,3 +105,4 @@ Se precisar de ajuda:
 **✨ Sua conta admin está pronta para uso!**
 
 **Login:** http://localhost:3000/backend/login.php
+

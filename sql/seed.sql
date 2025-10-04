@@ -6,19 +6,13 @@
 SET NAMES utf8mb4;
 
 -- ───────────────────────────────────────────────────────────
--- ADMIN USER
--- Email: admin@visionmetrics.test
--- Password: ChangeMe123!
+-- ADMIN USERS
 -- ───────────────────────────────────────────────────────────
 
 INSERT IGNORE INTO `users` (`id`, `email`, `password_hash`, `name`, `email_verified_at`)
-VALUES (
-  1,
-  'admin@visionmetrics.test',
-  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', -- ChangeMe123!
-  'Admin VisionMetrics',
-  NOW()
-);
+VALUES 
+(1, 'admin@visionmetrics.test', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin VisionMetrics', NOW()),
+(2, 'juan@admin.com', '$2y$10$eVefn6fOLS3V/VTyhTQSveh0tcO9.G4aUEpT8ZRrWVFIA0vZVHcuS', 'Juan Admin', NOW());
 
 -- ───────────────────────────────────────────────────────────
 -- DEMO WORKSPACE
@@ -35,7 +29,9 @@ VALUES (
 );
 
 INSERT IGNORE INTO `workspace_members` (`workspace_id`, `user_id`, `role`)
-VALUES (1, 1, 'owner');
+VALUES 
+(1, 1, 'owner'),
+(1, 2, 'admin');
 
 -- ───────────────────────────────────────────────────────────
 -- API KEY DE TESTE

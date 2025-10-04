@@ -320,3 +320,4 @@ docker-compose ps
 ---
 
 **🚀 Aproveite o VisionMetrics! Tudo funcionando!**
+

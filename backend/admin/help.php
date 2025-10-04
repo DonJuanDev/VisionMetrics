@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/middleware.php';
+require_once __DIR__ . '/../middleware.php';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -12,7 +12,7 @@ require_once __DIR__ . '/middleware.php';
 </head>
 <body>
     <div class="app-layout">
-        <?php include __DIR__ . '/partials/sidebar.php'; ?>
+        <?php include __DIR__ . '/../partials/sidebar.php'; ?>
         
         <div class="main-content">
             <div class="top-bar">

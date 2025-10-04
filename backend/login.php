@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/config.php';
 
 // Se já está logado, redirecionar para dashboard
 if (isset($_SESSION['user_id'])) {
@@ -11,51 +11,59 @@ if (isset($_SESSION['user_id'])) {
 $error = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Verify CSRF token
+    csrf_verify();
+    
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
     
     if ($email && $password) {
-        try {
-            // Conectar ao banco
-            $dsn = 'mysql:host=mysql;port=3306;dbname=visionmetrics;charset=utf8mb4';
-            $pdo = new PDO($dsn, 'visionmetrics', 'visionmetrics', [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-            ]);
-            
-            // Buscar usuário
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-            $stmt->execute([$email]);
-            $user = $stmt->fetch();
-            
-            if ($user && password_verify($password, $user['password_hash'])) {
-                // Login bem-sucedido
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_email'] = $user['email'];
-                $_SESSION['user_name'] = $user['name'];
+        // Check rate limiting
+        $identifier = $email . '|' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+        if (!checkRateLimit($identifier)) {
+            $error = 'Muitas tentativas de login. Tente novamente em 15 minutos.';
+        } else {
+            try {
+                $db = getDB();
                 
-                // Buscar workspace
-                $stmt = $pdo->prepare("
-                    SELECT w.* FROM workspaces w
-                    INNER JOIN workspace_members wm ON w.id = wm.workspace_id
-                    WHERE wm.user_id = ?
-                    LIMIT 1
-                ");
-                $stmt->execute([$user['id']]);
-                $workspace = $stmt->fetch();
+                // Buscar usuário
+                $stmt = $db->prepare("SELECT * FROM users WHERE email = ?");
+                $stmt->execute([$email]);
+                $user = $stmt->fetch();
                 
-                if ($workspace) {
-                    $_SESSION['workspace_id'] = $workspace['id'];
+                if ($user && password_verify($password, $user['password_hash'])) {
+                    // Login bem-sucedido
+                    recordLoginAttempt($identifier, true);
+                    
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['user_email'] = $user['email'];
+                    $_SESSION['user_name'] = $user['name'];
+                    
+                    // Buscar workspace
+                    $stmt = $db->prepare("
+                        SELECT w.* FROM workspaces w
+                        INNER JOIN workspace_members wm ON w.id = wm.workspace_id
+                        WHERE wm.user_id = ?
+                        LIMIT 1
+                    ");
+                    $stmt->execute([$user['id']]);
+                    $workspace = $stmt->fetch();
+                    
+                    if ($workspace) {
+                        $_SESSION['workspace_id'] = $workspace['id'];
+                    }
+                    
+                    header('Location: /backend/dashboard.php');
+                    exit;
+                } else {
+                    recordLoginAttempt($identifier, false);
+                    $error = 'Email ou senha inválidos';
                 }
                 
-                header('Location: /backend/dashboard.php');
-                exit;
-            } else {
-                $error = 'Email ou senha inválidos';
+            } catch (Exception $e) {
+                recordLoginAttempt($identifier, false);
+                $error = 'Erro ao fazer login';
             }
-            
-        } catch (Exception $e) {
-            $error = 'Erro ao fazer login';
         }
     } else {
         $error = 'Preencha email e senha';
@@ -166,6 +174,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
         
         <form method="POST">
+            <?= csrf_field() ?>
+            
             <div class="form-group">
                 <label>Email</label>
                 <input type="email" name="email" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" required autofocus placeholder="seu@email.com">
@@ -178,6 +188,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <button type="submit" class="btn-login">Entrar no Sistema</button>
         </form>
+        
+        <div style="margin-top: 20px; text-align: center;">
+            <a href="/backend/password-reset-request.php" style="color: #667eea; text-decoration: none; font-size: 14px;">
+                Esqueceu sua senha?
+            </a>
+        </div>
         
         <div class="demo">
             <strong>🔑 Credenciais Admin:</strong><br>

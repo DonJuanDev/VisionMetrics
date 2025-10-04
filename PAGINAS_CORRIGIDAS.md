@@ -237,3 +237,4 @@ Navegue por todas as páginas e teste as funcionalidades
 **Limpe o cache e teste agora! (Ctrl + Shift + R)**
 
 http://localhost:3000/backend/dashboard.php
+

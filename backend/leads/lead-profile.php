@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/middleware.php';
+require_once __DIR__ . '/../middleware.php';
 
 $db = getDB();
 $leadId = $_GET['id'] ?? 0;
@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_note'])) {
     <link rel="stylesheet" href="/frontend/css/style.css">
 </head>
 <body>
-    <?php include __DIR__ . '/partials/header.php'; ?>
+    <?php include __DIR__ . '/../partials/sidebar.php'; ?>
 
     <div class="container">
         <!-- Lead Header -->

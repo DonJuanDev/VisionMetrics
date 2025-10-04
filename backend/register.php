@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/config.php';
 
 // If already logged in, redirect to dashboard
 if (isset($_SESSION['user_id'])) {
@@ -11,6 +11,9 @@ $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Verify CSRF token
+    csrf_verify();
+    
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -24,40 +27,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'A senha deve ter no mínimo 6 caracteres';
     } else {
         try {
-            // Conectar ao banco
-            $dsn = 'mysql:host=mysql;port=3306;dbname=visionmetrics;charset=utf8mb4';
-            $pdo = new PDO($dsn, 'visionmetrics', 'visionmetrics', [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-            ]);
+            $db = getDB();
             
             // Check if email already exists
-            $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+            $stmt = $db->prepare("SELECT id FROM users WHERE email = ?");
             $stmt->execute([$email]);
             if ($stmt->fetch()) {
                 $error = 'Email já cadastrado';
             } else {
-                // Create user
+                // Create user (without email verification initially)
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare("INSERT INTO users (name, email, password_hash, email_verified_at) VALUES (?, ?, ?, NOW())");
+                $stmt = $db->prepare("INSERT INTO users (name, email, password_hash, email_verified_at) VALUES (?, ?, ?, NULL)");
                 
                 if ($stmt->execute([$name, $email, $hashed_password])) {
-                    $userId = $pdo->lastInsertId();
+                    $userId = $db->lastInsertId();
+                    
+                    // Generate email verification token
+                    $token = generateEmailVerificationToken();
+                    createEmailVerificationRecord($userId, $token);
+                    
+                    // Send verification email
+                    $verificationUrl = getenv('APP_URL') . '/backend/verify-email.php?token=' . $token;
+                    $emailBody = "
+                        <h2>Bem-vindo ao VisionMetrics!</h2>
+                        <p>Olá {$name},</p>
+                        <p>Para ativar sua conta, clique no link abaixo:</p>
+                        <p><a href='{$verificationUrl}' style='background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;'>Verificar Email</a></p>
+                        <p>Se o botão não funcionar, copie e cole este link no seu navegador:</p>
+                        <p>{$verificationUrl}</p>
+                        <p>Este link expira em 24 horas.</p>
+                    ";
+                    
+                    sendEmail($email, 'Verifique seu email - VisionMetrics', $emailBody);
                     
                     // Create default workspace
                     $slug = 'ws-' . uniqid();
-                    $stmt = $pdo->prepare("INSERT INTO workspaces (name, slug, owner_id, plan, status) VALUES (?, ?, ?, 'pro', 'active')");
+                    $stmt = $db->prepare("INSERT INTO workspaces (name, slug, owner_id, plan, status) VALUES (?, ?, ?, 'pro', 'active')");
                     $stmt->execute(['Meu Workspace', $slug, $userId]);
-                    $workspaceId = $pdo->lastInsertId();
+                    $workspaceId = $db->lastInsertId();
                     
                     // Add user as owner
-                    $stmt = $pdo->prepare("INSERT INTO workspace_members (workspace_id, user_id, role) VALUES (?, ?, 'owner')");
+                    $stmt = $db->prepare("INSERT INTO workspace_members (workspace_id, user_id, role) VALUES (?, ?, 'owner')");
                     $stmt->execute([$workspaceId, $userId]);
                     
-                    $success = 'Cadastro realizado com sucesso! Redirecionando para o login...';
-                    
-                    // Auto-redirect after 2 seconds
-                    echo '<meta http-equiv="refresh" content="2;url=/backend/login.php">';
+                    $success = 'Cadastro realizado com sucesso! Verifique seu email para ativar a conta.';
                 } else {
                     $error = 'Erro ao cadastrar. Tente novamente.';
                 }
@@ -200,6 +213,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form method="POST">
+                <?= csrf_field() ?>
+                
                 <div class="form-group">
                     <label for="name">Nome Completo</label>
                     <input type="text" id="name" name="name" required autofocus value="<?= htmlspecialchars($_POST['name'] ?? '') ?>" placeholder="Seu nome">

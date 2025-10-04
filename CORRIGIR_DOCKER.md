@@ -94,3 +94,4 @@ Acesse o PHPMyAdmin (http://localhost:8080) e verifique se as tabelas foram cria
 - conversations ✅ (nova)
 - whatsapp_numbers ✅ (nova)
 - messages ✅ (nova)
+

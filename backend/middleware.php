@@ -14,6 +14,15 @@ if (!$currentUser) {
     redirect('/backend/login.php');
 }
 
+// Check if email is verified (optional - can be disabled for testing)
+if (getenv('REQUIRE_EMAIL_VERIFICATION') === 'true' && !$currentUser['email_verified_at']) {
+    // Allow access to verification page
+    $currentPath = $_SERVER['REQUEST_URI'] ?? '';
+    if (!str_contains($currentPath, 'verify-email.php') && !str_contains($currentPath, 'logout.php')) {
+        redirect('/backend/verify-email.php?token=resend');
+    }
+}
+
 // Verificar workspace
 if (!isset($_SESSION['workspace_id'])) {
     $workspaces = getUserWorkspaces($currentUser['id']);

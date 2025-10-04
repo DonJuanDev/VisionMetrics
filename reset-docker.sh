@@ -28,3 +28,4 @@ echo ""
 echo "📝 Para ver os logs:"
 echo "   docker-compose logs -f app"
 echo ""
+

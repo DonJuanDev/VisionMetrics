@@ -19,11 +19,37 @@ class GA4Adapter {
     private $apiSecret;
     private $mode;
     private $apiUrl = 'https://www.google-analytics.com/mp/collect';
+    private $workspaceId;
     
-    public function __construct() {
-        $this->measurementId = env('GA4_MEASUREMENT_ID');
-        $this->apiSecret = env('GA4_API_SECRET');
+    public function __construct($workspaceId = null) {
+        $this->workspaceId = $workspaceId;
         $this->mode = env('ADAPTER_MODE', 'simulate');
+        
+        if ($workspaceId) {
+            $this->loadWorkspaceCredentials();
+        } else {
+            // Fallback para credenciais globais
+            $this->measurementId = env('GA4_MEASUREMENT_ID');
+            $this->apiSecret = env('GA4_API_SECRET');
+        }
+    }
+    
+    private function loadWorkspaceCredentials() {
+        if (!$this->workspaceId) return;
+        
+        $db = getDB();
+        $stmt = $db->prepare("
+            SELECT credentials FROM integrations 
+            WHERE workspace_id = ? AND provider = 'ga4' AND is_active = 1
+        ");
+        $stmt->execute([$this->workspaceId]);
+        $integration = $stmt->fetch();
+        
+        if ($integration && $integration['credentials']) {
+            $creds = json_decode($integration['credentials'], true);
+            $this->measurementId = $creds['measurement_id'] ?? null;
+            $this->apiSecret = $creds['api_secret'] ?? null;
+        }
     }
     
     /**

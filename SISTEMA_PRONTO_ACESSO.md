@@ -202,3 +202,4 @@ Qualquer dúvida, consulte os arquivos:
 - `README.md` - Documentação completa
 - `HOW_TO_RUN.md` - Como executar
 - `ARCHITECTURE.md` - Arquitetura do sistema
+

@@ -1,82 +1,155 @@
 <?php
+require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../middleware.php';
-require_once __DIR__ . '/../integrations/meta-ads.php';
-require_once __DIR__ . '/../integrations/google-analytics.php';
 
-header('Content-Type: application/json');
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    json_response(['error' => 'Method not allowed'], 405);
+// Only admin users can test integrations
+if ($currentUser['role'] !== 'owner' && $currentUser['role'] !== 'admin') {
+    http_response_code(403);
+    json_response(['error' => 'Access denied']);
 }
 
-$input = json_decode(file_get_contents('php://input'), true);
-$email = $input['email'] ?? '';
-$value = floatval($input['value'] ?? 0);
-$testMeta = $input['test_meta'] ?? false;
-$testGa4 = $input['test_ga4'] ?? false;
+$provider = $_GET['provider'] ?? $_POST['provider'] ?? '';
+$action = $_POST['action'] ?? 'test';
 
-$results = ['success' => true];
-
-// Test Meta Ads
-if ($testMeta) {
-    $db = getDB();
-    $stmt = $db->prepare("SELECT * FROM integrations WHERE workspace_id = ? AND type = 'meta_ads' AND is_active = 1");
-    $stmt->execute([$currentWorkspace['id']]);
-    $metaConfig = $stmt->fetch();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_verify();
     
-    if ($metaConfig) {
-        $credentials = json_decode($metaConfig['credentials'], true);
-        $settings = json_decode($metaConfig['settings'], true);
+    if ($action === 'test') {
+        $result = testIntegration($provider, $currentWorkspace['id']);
+        json_response($result);
+    } elseif ($action === 'save') {
+        $result = saveIntegrationCredentials($provider, $_POST, $currentWorkspace['id']);
+        json_response($result);
+    }
+}
+
+function testIntegration($provider, $workspaceId) {
+    try {
+        switch ($provider) {
+            case 'meta':
+                $adapter = new \VisionMetrics\Adapters\MetaAdapter($workspaceId);
+                $result = $adapter->sendConversion('TestEvent', [
+                    'email' => 'test@example.com',
+                    'first_name' => 'Test',
+                    'ip' => '127.0.0.1',
+                    'user_agent' => 'VisionMetrics Test',
+                    'page_url' => 'https://example.com/test'
+                ], [], 'test_' . time());
+                break;
+                
+            case 'ga4':
+                $adapter = new \VisionMetrics\Adapters\GA4Adapter($workspaceId);
+                $result = $adapter->sendEvent('test_event', 'test_client_' . time(), [
+                    'page_location' => 'https://example.com/test',
+                    'test_mode' => true
+                ]);
+                break;
+                
+            case 'tiktok':
+                $adapter = new \VisionMetrics\Adapters\TikTokAdapter($workspaceId);
+                $result = $adapter->sendEvent('TestEvent', [
+                    'email' => 'test@example.com',
+                    'ip' => '127.0.0.1',
+                    'user_agent' => 'VisionMetrics Test',
+                    'page_url' => 'https://example.com/test'
+                ], ['test_mode' => true]);
+                break;
+                
+            default:
+                return ['success' => false, 'error' => 'Unknown provider'];
+        }
         
-        $meta = new MetaAdsIntegration(
-            $credentials['access_token'],
-            $credentials['pixel_id'],
-            $settings['test_mode'] ?? false
-        );
+        // Update test result in database
+        $db = getDB();
+        $stmt = $db->prepare("
+            UPDATE integrations 
+            SET last_test_at = NOW(), test_result = ?, status = ?
+            WHERE workspace_id = ? AND provider = ?
+        ");
+        $status = $result['success'] ? 'active' : 'error';
+        $stmt->execute([
+            json_encode($result),
+            $status,
+            $workspaceId,
+            $provider
+        ]);
         
-        $userData = [
-            'email' => $email,
-            'name' => 'Test User',
-            'phone' => '+5511999999999',
-            'ip' => $_SERVER['REMOTE_ADDR'],
-            'user_agent' => $_SERVER['HTTP_USER_AGENT'],
-            'page_url' => APP_URL . '/test'
+        return $result;
+        
+    } catch (Exception $e) {
+        return [
+            'success' => false,
+            'error' => $e->getMessage()
         ];
-        
-        $results['meta_result'] = $meta->trackLead($userData, $value);
-    } else {
-        $results['meta_result'] = ['success' => false, 'error' => 'Meta Ads não configurado'];
     }
 }
 
-// Test GA4
-if ($testGa4) {
-    $db = getDB();
-    $stmt = $db->prepare("SELECT * FROM integrations WHERE workspace_id = ? AND type = 'google_analytics' AND is_active = 1");
-    $stmt->execute([$currentWorkspace['id']]);
-    $ga4Config = $stmt->fetch();
-    
-    if ($ga4Config) {
-        $credentials = json_decode($ga4Config['credentials'], true);
+function saveIntegrationCredentials($provider, $data, $workspaceId) {
+    try {
+        $db = getDB();
         
-        $ga4 = new GoogleAnalytics4Integration(
-            $credentials['measurement_id'],
-            $credentials['api_secret'],
-            true // debug mode
-        );
+        $credentials = [];
+        switch ($provider) {
+            case 'meta':
+                $credentials = [
+                    'pixel_id' => $data['pixel_id'] ?? '',
+                    'access_token' => $data['access_token'] ?? '',
+                    'test_event_code' => $data['test_event_code'] ?? ''
+                ];
+                break;
+                
+            case 'ga4':
+                $credentials = [
+                    'measurement_id' => $data['measurement_id'] ?? '',
+                    'api_secret' => $data['api_secret'] ?? ''
+                ];
+                break;
+                
+            case 'tiktok':
+                $credentials = [
+                    'pixel_id' => $data['pixel_id'] ?? '',
+                    'access_token' => $data['access_token'] ?? ''
+                ];
+                break;
+                
+            default:
+                return ['success' => false, 'error' => 'Unknown provider'];
+        }
         
-        $clientId = 'test_' . uniqid();
+        // Upsert integration
+        $stmt = $db->prepare("
+            INSERT INTO integrations (workspace_id, provider, credentials, is_active, status, created_at, updated_at)
+            VALUES (?, ?, ?, 1, 'inactive', NOW(), NOW())
+            ON DUPLICATE KEY UPDATE
+            credentials = VALUES(credentials),
+            is_active = VALUES(is_active),
+            status = 'inactive',
+            updated_at = NOW()
+        ");
+        $stmt->execute([$workspaceId, $provider, json_encode($credentials)]);
         
-        $results['ga4_result'] = $ga4->trackLead($clientId, $value, 'test', 'api', 'test_campaign');
-    } else {
-        $results['ga4_result'] = ['success' => false, 'error' => 'GA4 não configurado'];
+        return ['success' => true, 'message' => 'Credentials saved successfully'];
+        
+    } catch (Exception $e) {
+        return [
+            'success' => false,
+            'error' => $e->getMessage()
+        ];
     }
 }
 
-json_response($results);
+// Get integration status
+$db = getDB();
+$stmt = $db->prepare("
+    SELECT provider, status, last_test_at, test_result, credentials
+    FROM integrations 
+    WHERE workspace_id = ? AND provider = ?
+");
+$stmt->execute([$currentWorkspace['id'], $provider]);
+$integration = $stmt->fetch();
 
-
-
-
-
-
+json_response([
+    'provider' => $provider,
+    'integration' => $integration,
+    'available_providers' => ['meta', 'ga4', 'tiktok']
+]);

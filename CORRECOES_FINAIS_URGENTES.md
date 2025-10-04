@@ -226,3 +226,4 @@ Depois teste as 3 páginas:
 3. http://localhost:3000/backend/reports.php
 
 **TUDO DEVE FUNCIONAR AGORA! 🚀**
+

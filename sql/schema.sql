@@ -30,6 +30,27 @@ CREATE TABLE IF NOT EXISTS `password_resets` (
   INDEX `idx_token` (`token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `login_attempts` (
+  `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `identifier` VARCHAR(255) NOT NULL,
+  `ip_address` VARCHAR(45) NOT NULL,
+  `success` BOOLEAN DEFAULT FALSE,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX `idx_identifier` (`identifier`),
+  INDEX `idx_ip` (`ip_address`),
+  INDEX `idx_created` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `email_verifications` (
+  `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `user_id` BIGINT UNSIGNED NOT NULL,
+  `token` VARCHAR(255) NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  INDEX `idx_user` (`user_id`),
+  INDEX `idx_token` (`token`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ───────────────────────────────────────────────────────────
 -- MULTI-TENANT (WORKSPACES)
 -- ───────────────────────────────────────────────────────────
@@ -39,6 +60,9 @@ CREATE TABLE IF NOT EXISTS `workspaces` (
   `name` VARCHAR(255) NOT NULL,
   `slug` VARCHAR(255) NOT NULL UNIQUE,
   `domain` VARCHAR(255) NULL,
+  `custom_domain` VARCHAR(255) NULL,
+  `custom_domain_verified` BOOLEAN DEFAULT FALSE,
+  `custom_domain_ssl` BOOLEAN DEFAULT FALSE,
   `owner_id` BIGINT UNSIGNED NOT NULL,
   `plan` ENUM('free', 'starter', 'pro', 'business', 'enterprise') DEFAULT 'free',
   `status` ENUM('active', 'suspended', 'cancelled') DEFAULT 'active',
@@ -47,7 +71,8 @@ CREATE TABLE IF NOT EXISTS `workspaces` (
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (`owner_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
   INDEX `idx_slug` (`slug`),
-  INDEX `idx_owner` (`owner_id`)
+  INDEX `idx_owner` (`owner_id`),
+  INDEX `idx_custom_domain` (`custom_domain`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `workspace_members` (
@@ -178,6 +203,9 @@ CREATE TABLE IF NOT EXISTS `events` (
   `ttclid` VARCHAR(255) NULL,
   `user_agent` TEXT NULL,
   `ip_address` VARCHAR(45) NULL,
+  `country` VARCHAR(100) NULL,
+  `region` VARCHAR(100) NULL,
+  `city` VARCHAR(100) NULL,
   `fingerprint` VARCHAR(64) NULL,
   `idempotency_key` VARCHAR(255) NULL,
   `raw_data` JSON NULL,
@@ -264,6 +292,8 @@ CREATE TABLE IF NOT EXISTS `integrations` (
   `credentials` JSON NULL,
   `config` JSON NULL,
   `last_sync_at` TIMESTAMP NULL,
+  `last_test_at` TIMESTAMP NULL,
+  `test_result` JSON NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY `unique_integration` (`workspace_id`, `provider`),
@@ -281,6 +311,28 @@ CREATE TABLE IF NOT EXISTS `webhooks_logs` (
   `received_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INDEX `idx_source` (`source`),
   INDEX `idx_received` (`received_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ───────────────────────────────────────────────────────────
+-- METRICS & ANALYTICS
+-- ───────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS `metrics_daily` (
+  `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `workspace_id` BIGINT UNSIGNED NOT NULL,
+  `date` DATE NOT NULL,
+  `metric_type` VARCHAR(50) NOT NULL,
+  `channel` VARCHAR(100) NULL,
+  `campaign` VARCHAR(255) NULL,
+  `value` DECIMAL(15,2) DEFAULT 0.00,
+  `metadata` JSON NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `unique_metric` (`workspace_id`, `date`, `metric_type`, `channel`, `campaign`),
+  FOREIGN KEY (`workspace_id`) REFERENCES `workspaces`(`id`) ON DELETE CASCADE,
+  INDEX `idx_date` (`date`),
+  INDEX `idx_metric_type` (`metric_type`),
+  INDEX `idx_channel` (`channel`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ───────────────────────────────────────────────────────────

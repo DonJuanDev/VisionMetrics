@@ -25,12 +25,39 @@ class MetaAdapter {
     private $testEventCode;
     private $apiVersion = 'v18.0';
     private $mode;
+    private $workspaceId;
     
-    public function __construct() {
-        $this->pixelId = env('META_PIXEL_ID');
-        $this->accessToken = env('META_ACCESS_TOKEN');
-        $this->testEventCode = env('META_TEST_EVENT_CODE');
+    public function __construct($workspaceId = null) {
+        $this->workspaceId = $workspaceId;
         $this->mode = env('ADAPTER_MODE', 'simulate');
+        
+        if ($workspaceId) {
+            $this->loadWorkspaceCredentials();
+        } else {
+            // Fallback para credenciais globais
+            $this->pixelId = env('META_PIXEL_ID');
+            $this->accessToken = env('META_ACCESS_TOKEN');
+            $this->testEventCode = env('META_TEST_EVENT_CODE');
+        }
+    }
+    
+    private function loadWorkspaceCredentials() {
+        if (!$this->workspaceId) return;
+        
+        $db = getDB();
+        $stmt = $db->prepare("
+            SELECT credentials FROM integrations 
+            WHERE workspace_id = ? AND provider = 'meta' AND is_active = 1
+        ");
+        $stmt->execute([$this->workspaceId]);
+        $integration = $stmt->fetch();
+        
+        if ($integration && $integration['credentials']) {
+            $creds = json_decode($integration['credentials'], true);
+            $this->pixelId = $creds['pixel_id'] ?? null;
+            $this->accessToken = $creds['access_token'] ?? null;
+            $this->testEventCode = $creds['test_event_code'] ?? null;
+        }
     }
     
     /**

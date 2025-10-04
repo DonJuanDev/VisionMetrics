@@ -243,6 +243,18 @@ function exportPDF($leads, $columns) {
                             <label style="display: flex; align-items: center; gap: 8px;">
                                 <input type="checkbox" name="columns[]" value="last_seen"> Última Atividade
                             </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="columns[]" value="utm_source"> Origem UTM
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="columns[]" value="utm_campaign"> Campanha UTM
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="columns[]" value="country"> País
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" name="columns[]" value="region"> Estado/Região
+                            </label>
                         </div>
                     </div>
 
