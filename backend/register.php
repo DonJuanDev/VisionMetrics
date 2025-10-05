@@ -87,112 +87,236 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro - VisionMetrics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/frontend/css/style.css">
     <style>
+        :root {
+            --bg-primary: #0A0A0B;
+            --bg-secondary: #111113;
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --bg-glass-hover: rgba(255, 255, 255, 0.1);
+            --text-primary: #FFFFFF;
+            --text-secondary: #A1A1AA;
+            --text-muted: #71717A;
+            --primary: #8B5CF6;
+            --secondary: #3B82F6;
+            --accent: #10B981;
+            --gradient-primary: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%);
+            --gradient-secondary: linear-gradient(135deg, #3B82F6 0%, #10B981 100%);
+            --gradient-accent: linear-gradient(135deg, #10B981 0%, #F59E0B 100%);
+            --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow-glass-hover: 0 12px 40px rgba(0, 0, 0, 0.4);
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --transition-normal: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            position: relative;
+            overflow: hidden;
         }
+
+        /* Background Animation */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.2) 0%, transparent 50%);
+            z-index: -1;
+            animation: backgroundShift 20s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { transform: translateX(0) translateY(0) scale(1); }
+            33% { transform: translateX(-20px) translateY(-20px) scale(1.1); }
+            66% { transform: translateX(20px) translateY(20px) scale(0.9); }
+        }
+
         .auth-container {
             width: 100%;
-            max-width: 450px;
+            max-width: 480px;
         }
+
         .auth-box {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-glass);
+            padding: 48px;
+            position: relative;
+            z-index: 1;
         }
+
         .auth-logo {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
+
         .auth-logo h1 {
-            font-size: 32px;
-            color: #667eea;
-            margin-bottom: 10px;
+            font-size: 36px;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            font-family: 'Poppins', sans-serif;
         }
+
         .auth-logo p {
-            color: #6b7280;
-            font-size: 14px;
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 400;
         }
+
         .alert {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 16px 20px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 24px;
             font-size: 14px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
+
         .alert-error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #FCA5A5;
         }
+
         .alert-success {
-            background: #d1fae5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #6EE7B7;
         }
+
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
+
         label {
             display: block;
             margin-bottom: 8px;
-            color: #374151;
-            font-weight: 500;
+            color: var(--text-primary);
+            font-weight: 600;
             font-size: 14px;
         }
+
         input[type="text"],
         input[type="email"],
         input[type="password"] {
             width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: all 0.3s;
+            padding: 16px 20px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            font-size: 15px;
+            color: var(--text-primary);
+            transition: var(--transition-normal);
         }
+
+        input::placeholder {
+            color: var(--text-muted);
+        }
+
         input[type="text"]:focus,
         input[type="email"]:focus,
         input[type="password"]:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+            background: var(--bg-glass-hover);
         }
+
         button[type="submit"] {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 16px;
+            background: var(--gradient-primary);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: var(--radius-lg);
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: var(--transition-normal);
+            position: relative;
+            overflow: hidden;
         }
+
+        button[type="submit"]::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        button[type="submit"]:hover::before {
+            left: 100%;
+        }
+
         button[type="submit"]:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 12px 40px rgba(139, 92, 246, 0.4);
         }
+
         .auth-footer {
-            margin-top: 20px;
+            margin-top: 24px;
             text-align: center;
             font-size: 14px;
-            color: #6b7280;
+            color: var(--text-secondary);
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .auth-footer a {
-            color: #667eea;
+            color: var(--primary);
             text-decoration: none;
             font-weight: 600;
+            transition: var(--transition-normal);
         }
+
         .auth-footer a:hover {
+            color: var(--secondary);
             text-decoration: underline;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .auth-box {
+                padding: 32px 24px;
+                margin: 10px;
+            }
+            
+            .auth-logo h1 {
+                font-size: 28px;
+            }
         }
     </style>
 </head>
@@ -200,8 +324,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="auth-container">
         <div class="auth-box">
             <div class="auth-logo">
+                <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+                    <div style="width: 48px; height: 48px; background: var(--gradient-primary); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-right: 16px; box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M4 4L4 8L8 12L4 16L4 20L12 12L4 4Z" fill="white"/>
+                            <path d="M20 4L20 8L16 12L20 16L20 20L12 12L20 4Z" fill="#A78BFA"/>
+                        </svg>
+                    </div>
+                </div>
                 <h1>VisionMetrics</h1>
-                <p>Lead Tracking & WhatsApp Attribution Platform</p>
+                <p>Comece sua jornada de sucesso</p>
             </div>
             
             <?php if ($error): ?>

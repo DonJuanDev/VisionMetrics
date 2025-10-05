@@ -3,7 +3,11 @@
         <a href="/backend/dashboard.php" class="sidebar-logo">
             <div class="sidebar-logo-icon">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" fill="white"/>
+                    <!-- VisionMetrics Logo - V estilizado -->
+                    <!-- Forma esquerda (branca) -->
+                    <path d="M4 4L4 8L8 12L4 16L4 20L12 12L4 4Z" fill="white"/>
+                    <!-- Forma direita (roxo claro) -->
+                    <path d="M20 4L20 8L16 12L20 16L20 20L12 12L20 4Z" fill="#A78BFA"/>
                 </svg>
             </div>
             <span class="sidebar-logo-text"><?= APP_NAME ?></span>
