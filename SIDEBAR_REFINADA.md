@@ -131,3 +131,4 @@ font-size: 20px;
 - **Densidade visual**: +30% (mais conteúdo visível)
 
 A sidebar agora está **elegante, proporcional e funcional**, mantendo toda a funcionalidade enquanto oferece uma experiência visual muito mais refinada! 🎉
+

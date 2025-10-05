@@ -342,3 +342,4 @@ Qualquer dúvida, consulte os arquivos de documentação criados.
 **Site:** https://visionmetricsapp.com  
 **Versão:** 1.0.0
 
+

@@ -141,3 +141,4 @@ O novo tema implementa exatamente o que foi solicitado no prompt:
 ✅ **Experiência premium** e visualmente engajadora  
 
 O dashboard agora possui uma identidade visual moderna, escura e vibrante que transmite profissionalismo e sofisticação, mantendo a usabilidade e acessibilidade em primeiro lugar.
+

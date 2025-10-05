@@ -243,3 +243,4 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('🎨 Theme animations and micro-interactions loaded successfully!');
 });
+

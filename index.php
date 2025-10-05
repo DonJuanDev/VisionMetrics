@@ -37,7 +37,6 @@
             <nav class="nav">
                 <a href="#features" class="nav-link">Recursos</a>
                 <a href="#how-it-works" class="nav-link">Como Funciona</a>
-                <a href="#ai" class="nav-link">Inteligência Artificial</a>
                 <a href="#security" class="nav-link">Segurança</a>
                 <a href="#pricing" class="nav-link">Planos</a>
             </nav>
@@ -72,7 +71,6 @@
         <nav class="mobile-nav">
             <a href="#features" class="mobile-nav-link">Recursos</a>
             <a href="#how-it-works" class="mobile-nav-link">Como Funciona</a>
-            <a href="#ai" class="mobile-nav-link">Inteligência Artificial</a>
             <a href="#security" class="mobile-nav-link">Segurança</a>
             <a href="#pricing" class="mobile-nav-link">Planos</a>
         </nav>
@@ -113,6 +111,16 @@
             <div class="features-grid">
                 <div class="feature-card fade-in-up">
                     <div class="feature-video">
+                        <div class="feature-video-wrapper">
+                            <div class="feature-video-header">
+                                <div class="feature-video-dot red"></div>
+                                <div class="feature-video-dot yellow"></div>
+                                <div class="feature-video-dot green"></div>
+                            </div>
+                            <video autoplay loop muted playsinline>
+                                <source src="videos/video teste bino.mp4" type="video/mp4">
+                            </video>
+                        </div>
                         <div class="play-button">▶</div>
                     </div>
                     <div class="feature-icon blue">📊</div>
@@ -122,6 +130,16 @@
         
                 <div class="feature-card fade-in-up">
                     <div class="feature-video">
+                        <div class="feature-video-wrapper">
+                            <div class="feature-video-header">
+                                <div class="feature-video-dot red"></div>
+                                <div class="feature-video-dot yellow"></div>
+                                <div class="feature-video-dot green"></div>
+                            </div>
+                            <video autoplay loop muted playsinline>
+                                <source src="videos/video teste bino.mp4" type="video/mp4">
+                            </video>
+                        </div>
                         <div class="play-button">▶</div>
                     </div>
                     <div class="feature-icon yellow">⚡</div>
@@ -131,6 +149,16 @@
         
                 <div class="feature-card fade-in-up">
                     <div class="feature-video">
+                        <div class="feature-video-wrapper">
+                            <div class="feature-video-header">
+                                <div class="feature-video-dot red"></div>
+                                <div class="feature-video-dot yellow"></div>
+                                <div class="feature-video-dot green"></div>
+                            </div>
+                            <video autoplay loop muted playsinline>
+                                <source src="videos/video teste bino.mp4" type="video/mp4">
+                            </video>
+                        </div>
                         <div class="play-button">▶</div>
                     </div>
                     <div class="feature-icon green">💬</div>
@@ -148,7 +176,7 @@
             <p class="section-subtitle">Em apenas 4 passos, sua empresa deixa a papelada para trás e passa a ter um controle de leads moderno e eficiente. Veja como é fácil:</p>
             
             <div class="steps-grid">
-                <div class="step-card fade-in-left">
+                <div class="step-card">
                     <div class="step-content">
                         <div class="step-number">Passo 1</div>
                         <h3 class="step-title">O Ponto de Partida: A Conta do Gestor</h3>
@@ -156,12 +184,22 @@
                     </div>
                     <div class="step-visual">
                         <div class="step-video">
+                            <div class="step-video-wrapper">
+                                <div class="step-video-header">
+                                    <div class="step-video-dot red"></div>
+                                    <div class="step-video-dot yellow"></div>
+                                    <div class="step-video-dot green"></div>
+                                </div>
+                                <video autoplay loop muted playsinline>
+                                    <source src="videos/video teste bino.mp4" type="video/mp4">
+                                </video>
+                            </div>
                             <div class="play-button">▶</div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="step-card reverse fade-in-right">
+                <div class="step-card reverse">
                     <div class="step-content">
                         <div class="step-number">Passo 2</div>
                         <h3 class="step-title">É Hora de Chamar a Equipe</h3>
@@ -169,12 +207,22 @@
                     </div>
                     <div class="step-visual">
                         <div class="step-video">
+                            <div class="step-video-wrapper">
+                                <div class="step-video-header">
+                                    <div class="step-video-dot red"></div>
+                                    <div class="step-video-dot yellow"></div>
+                                    <div class="step-video-dot green"></div>
+                                </div>
+                                <video autoplay loop muted playsinline>
+                                    <source src="videos/video teste bino.mp4" type="video/mp4">
+                                </video>
+                            </div>
                             <div class="play-button">▶</div>
                         </div>
                     </div>
-        </div>
+                </div>
         
-                <div class="step-card fade-in-left">
+                <div class="step-card">
                     <div class="step-content">
                         <div class="step-number">Passo 3</div>
                         <h3 class="step-title">O Colaborador Entra em Campo</h3>
@@ -182,12 +230,22 @@
                     </div>
                     <div class="step-visual">
                         <div class="step-video">
+                            <div class="step-video-wrapper">
+                                <div class="step-video-header">
+                                    <div class="step-video-dot red"></div>
+                                    <div class="step-video-dot yellow"></div>
+                                    <div class="step-video-dot green"></div>
+                                </div>
+                                <video autoplay loop muted playsinline>
+                                    <source src="videos/video teste bino.mp4" type="video/mp4">
+                                </video>
+                            </div>
                             <div class="play-button">▶</div>
                         </div>
                     </div>
-        </div>
+                </div>
         
-                <div class="step-card reverse fade-in-right">
+                <div class="step-card reverse">
                     <div class="step-content">
                         <div class="step-number">Passo 4</div>
                         <h3 class="step-title">Equipe Pronta para a Ação!</h3>
@@ -195,79 +253,17 @@
                     </div>
                     <div class="step-visual">
                         <div class="step-video">
-                            <div class="play-button">▶</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- AI Section -->
-    <section class="ai-section" id="ai">
-        <div class="ai-content">
-            <h2 class="section-title">Uma IA que trabalha do seu jeito</h2>
-            <p class="section-subtitle">Nossa inteligência artificial aprende as regras da sua empresa, identifica leads de qualidade, garante conformidade e previne fraudes automaticamente.</p>
-            
-            <div class="ai-grid">
-                <div class="ai-features">
-                    <div class="ai-feature">
-                        <div class="ai-feature-icon blue">💎</div>
-                        <div class="ai-feature-text">
-                            <div class="ai-feature-title">Crie categorias personalizadas</div>
-                            <div class="ai-feature-description">Defina tipos de leads, valores e regras específicas para sua empresa</div>
-                        </div>
-                    </div>
-                    <div class="ai-feature">
-                        <div class="ai-feature-icon orange">🏷️</div>
-                        <div class="ai-feature-text">
-                            <div class="ai-feature-title">Defina o que é suspeito</div>
-                            <div class="ai-feature-description">Configure alertas automáticos para comportamentos suspeitos ou leads de baixa qualidade</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="ai-visual">
-                    <div class="modal-card">
-                        <h4 class="modal-title">Criar Nova Categoria</h4>
-                        <div class="form-group">
-                            <label class="form-label">Nome da categoria</label>
-                            <input type="text" class="form-input" placeholder="Ex: Leads Premium">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Limite de conversão (Opcional)</label>
-                            <input type="number" class="form-input" placeholder="Ex: 100">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Palavras-chave para identificação</label>
-                            <input type="text" class="form-input" placeholder="Ex: premium, vip, gold">
-                        </div>
-                        <div class="toggle-switch">
-                            <div class="toggle active"></div>
-                            <span>Categoria suspeita?</span>
-                        </div>
-                        <button class="btn-primary" style="width: 100%; margin-top: 16px;">Criar Categoria</button>
-                    </div>
-                    
-                    <div class="modal-card">
-                        <h4 class="modal-title">Anexos de leads (3)</h4>
-                        <div style="background: var(--light-gray); height: 120px; border-radius: 8px; margin: 16px 0; display: flex; align-items: center; justify-content: center;">
-                            <div style="text-align: center;">
-                                <div style="font-size: 24px; margin-bottom: 8px;">📄</div>
-                                <div style="font-size: 12px; color: var(--text-muted);">Comprovante de Lead</div>
+                            <div class="step-video-wrapper">
+                                <div class="step-video-header">
+                                    <div class="step-video-dot red"></div>
+                                    <div class="step-video-dot yellow"></div>
+                                    <div class="step-video-dot green"></div>
+                                </div>
+                                <video autoplay loop muted playsinline>
+                                    <source src="videos/video teste bino.mp4" type="video/mp4">
+                                </video>
                             </div>
-                        </div>
-                        <div style="background: rgba(47, 112, 248, 0.1); padding: 8px; border-radius: 4px; margin-bottom: 8px;">
-                            <strong>Categoria: LEADS PREMIUM</strong>
-                        </div>
-                        <div style="background: rgba(245, 158, 11, 0.1); padding: 8px; border-radius: 4px; margin-bottom: 8px;">
-                            <strong>Status: SUSPEITA - valor acima do limite da categoria</strong>
-                        </div>
-                        <div style="font-size: 14px; margin-bottom: 4px;">Valor do Lead: R$ 88.00</div>
-                        <div style="font-size: 14px; margin-bottom: 8px;">Valor total: R$ 250</div>
-                        <div style="border-top: 1px solid var(--border-light); padding-top: 8px;">
-                            <div style="font-weight: 600;">TOTAL: R$ 400</div>
-                            <div style="font-weight: 600; color: var(--success-green);">TOTAL APROVADO: R$ 88</div>
+                            <div class="play-button">▶</div>
                         </div>
                     </div>
                 </div>
@@ -402,15 +398,21 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
-            <div class="footer-text">© 2025 VisionMetrics. Todos os direitos reservados.</div>
+            <div class="footer-left">
+                <a href="#" class="footer-logo">
+                    <div class="logo-icon">V</div>
+                    <span>VisionMetrics</span>
+                </a>
+                <div class="footer-text">© 2025 VisionMetrics. Todos os direitos reservados.</div>
+            </div>
             <div class="social-links">
-                <a href="#" class="social-link">💼</a>
-                <a href="#" class="social-link">📷</a>
-                <a href="#" class="social-link">✉️</a>
-                <a href="#" class="social-link">💬</a>
-                <a href="#" class="social-link">🎧</a>
+                <a href="#" class="social-link" title="LinkedIn">💼</a>
+                <a href="#" class="social-link" title="Instagram">📷</a>
+                <a href="#" class="social-link" title="Email">✉️</a>
+                <a href="#" class="social-link" title="WhatsApp">💬</a>
+                <a href="#" class="social-link" title="Discord">🎧</a>
+            </div>
         </div>
-    </div>
     </footer>
 
     <!-- Back to Top Button -->
@@ -652,9 +654,25 @@
             observer.observe(el);
         });
 
-        // Play button interactions with ripple effect
+        // Play button interactions with ripple effect and video control
         document.querySelectorAll('.play-button').forEach(button => {
             button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                // Find the video element
+                const videoContainer = this.parentElement;
+                const video = videoContainer.querySelector('video');
+                
+                if (video) {
+                    if (video.paused) {
+                        video.play();
+                        this.textContent = '⏸';
+                    } else {
+                        video.pause();
+                        this.textContent = '▶';
+                    }
+                }
+                
                 // Create ripple effect
                 const ripple = document.createElement('span');
                 ripple.style.position = 'absolute';
@@ -662,18 +680,48 @@
                 ripple.style.background = 'rgba(255, 255, 255, 0.5)';
                 ripple.style.width = '100px';
                 ripple.style.height = '100px';
-                ripple.style.marginTop = '-50px';
-                ripple.style.marginLeft = '-50px';
+                ripple.style.top = '50%';
+                ripple.style.left = '50%';
+                ripple.style.transform = 'translate(-50%, -50%)';
                 ripple.style.animation = 'ripple 0.6s';
                 ripple.style.pointerEvents = 'none';
                 
                 this.appendChild(ripple);
                 
-                this.style.transform = 'scale(1.15)';
                 setTimeout(() => {
-                    this.style.transform = 'scale(1)';
                     ripple.remove();
                 }, 600);
+            });
+        });
+        
+        // Hide play button when video is playing, show when paused
+        document.querySelectorAll('video').forEach(video => {
+            const videoContainer = video.closest('.feature-video, .step-video');
+            const playButton = videoContainer ? videoContainer.querySelector('.play-button') : null;
+            
+            video.addEventListener('play', () => {
+                if (playButton) playButton.style.opacity = '0';
+            });
+            
+            video.addEventListener('pause', () => {
+                if (playButton) playButton.style.opacity = '1';
+            });
+            
+            // Click on video to pause/play
+            video.addEventListener('click', () => {
+                if (video.paused) {
+                    video.play();
+                    if (playButton) {
+                        playButton.textContent = '⏸';
+                        playButton.style.opacity = '0';
+                    }
+                } else {
+                    video.pause();
+                    if (playButton) {
+                        playButton.textContent = '▶';
+                        playButton.style.opacity = '1';
+                    }
+                }
             });
         });
 

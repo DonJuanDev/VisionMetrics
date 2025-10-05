@@ -130,3 +130,4 @@
 As páginas de login e cadastro foram completamente transformadas com um design moderno, elegante e profissional. O tema dark com glassmorphism cria uma experiência premium que reflete a qualidade da plataforma VisionMetrics. Todas as interações são fluidas e o design é totalmente responsivo, garantindo uma excelente experiência em qualquer dispositivo.
 
 A página de vendas está pronta para ser implementada no localhost:3000, oferecendo uma landing page completa e profissional que converte visitantes em usuários! 🚀
+

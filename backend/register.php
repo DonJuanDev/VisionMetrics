@@ -485,34 +485,104 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         @media (max-width: 968px) {
+            body {
+                overflow-y: auto;
+            }
+            
             .container {
                 flex-direction: column;
+                min-height: auto;
             }
             
             .left {
-                min-height: 35vh;
+                min-height: 40vh;
+                flex: none;
             }
 
             .left-content h1 {
                 font-size: 36px;
             }
             
+            .left-content p {
+                font-size: 14px;
+            }
+            
             .right {
                 padding: 40px 24px;
+                min-height: 60vh;
+                flex: none;
             }
 
             .auth-title {
                 font-size: 32px;
             }
+            
+            .auth-header {
+                margin-bottom: 32px;
+            }
+            
+            .form-group {
+                margin-bottom: 20px;
+            }
         }
 
         @media (max-width: 480px) {
-            .auth-title {
+            .left {
+                min-height: 30vh;
+                padding: 24px;
+            }
+            
+            .logo-circle {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 16px;
+            }
+            
+            .logo-circle svg {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .left-content h1 {
                 font-size: 28px;
+            }
+            
+            .left-content p {
+                font-size: 13px;
+            }
+            
+            .right {
+                padding: 32px 20px;
+            }
+            
+            .auth-header {
+                margin-bottom: 24px;
+            }
+
+            .auth-title {
+                font-size: 24px;
+            }
+            
+            .auth-subtitle {
+                font-size: 14px;
             }
 
             .form-input {
                 padding: 14px 16px;
+                font-size: 15px;
+            }
+            
+            .form-label {
+                font-size: 13px;
+            }
+            
+            .btn {
+                padding: 14px 24px;
+                font-size: 15px;
+            }
+            
+            .auth-footer {
+                font-size: 13px;
             }
         }
     </style>
