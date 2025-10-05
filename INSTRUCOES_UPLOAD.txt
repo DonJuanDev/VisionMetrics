@@ -1,0 +1,31 @@
+🚀 INSTRUÇÕES PARA UPLOAD NO HOSTINGER
+
+1. ARQUIVO .env (CRÍTICO!)
+   - Faça upload do arquivo .env para a RAIZ do projeto
+   - Deve ficar no mesmo local do index.php
+   - NÃO coloque dentro de pastas
+
+2. ARQUIVO test_db.php
+   - Faça upload do test_db.php para a RAIZ também
+   - Acesse: https://visionmetricsapp.com.br/test_db.php
+   - Isso vai testar se a conexão com banco está funcionando
+
+3. CORREÇÕES FEITAS:
+   ✅ Redirecionamentos corrigidos
+   ✅ Arquivo .env configurado para Hostinger
+   ✅ DB_HOST=mysql.hostinger.com
+
+4. TESTE:
+   - Acesse: https://visionmetricsapp.com.br/test_db.php
+   - Se aparecer "CONEXÃO FUNCIONANDO" = sucesso!
+   - Depois teste: https://visionmetricsapp.com.br/backend/login.php
+
+5. SE AINDA DER ERRO:
+   - Verifique se o arquivo .env está na raiz
+   - Verifique se as credenciais do banco estão corretas no painel Hostinger
+   - O banco deve existir e estar ativo
+
+ORDEM DE UPLOAD:
+1. .env (raiz)
+2. test_db.php (raiz) 
+3. Todos os outros arquivos PHP atualizados

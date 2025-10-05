@@ -3,7 +3,7 @@ require_once __DIR__ . '/config.php';
 
 // If already logged in, redirect to dashboard
 if (isset($_SESSION['user_id'])) {
-    header('Location: /backend/dashboard.php');
+    header('Location: /backend/dashboard/dashboard.php');
     exit;
 }
 
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['user_id'] = $userId;
                     $_SESSION['workspace_id'] = $workspaceId;
                     
-                    header('Location: /backend/dashboard.php');
+                    header('Location: /backend/dashboard/dashboard.php');
                     exit;
                 } else {
                     $error = 'Erro ao cadastrar. Tente novamente.';

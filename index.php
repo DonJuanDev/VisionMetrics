@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VisionMetrics - A Plataforma de Leads Mais Avançada do Mundo</title>
-    <meta name="description" content="Transforme visitantes em clientes com nossa plataforma de inteligência artificial. Mais de 10.000 empresas já aumentaram suas vendas em 300%.">
-    <meta name="keywords" content="leads, conversão, marketing digital, automação, CRM, vendas, inteligência artificial">
+    <title>VisionMetrics - Rastreie suas conversas e alavance suas vendas pelo WhatsApp</title>
+    <meta name="description" content="Utilize o poder dos dados para alavancar suas vendas pelo WhatsApp! Rastreie suas conversas e acesse insights valiosos para otimizar suas campanhas.">
+    <meta name="keywords" content="whatsapp, rastreamento, vendas, conversas, meta ads, google ads, leads, marketing digital, automação">
     
     <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik00IDRMNCA4TDggMTJMNCAxNkw0IDIwTDEyIDEyTDQgNFoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTIwIDRMMjAgOEwxNiAxMkwyMCAxNkwyMCAyMEwxMiAxMkwyMCA0WiIgZmlsbD0iI0E3OEJGQSIvPjwvc3ZnPg==">
@@ -35,15 +35,15 @@
             </a>
             
             <nav class="nav">
-                <a href="#features" class="nav-link">Recursos</a>
+                <a href="#features" class="nav-link">Funcionalidades</a>
                 <a href="#how-it-works" class="nav-link">Como Funciona</a>
-                <a href="#security" class="nav-link">Segurança</a>
+                <a href="#testimonials" class="nav-link">Depoimentos</a>
                 <a href="#pricing" class="nav-link">Planos</a>
             </nav>
             
             <div class="header-actions">
                 <a href="/backend/login.php" class="btn-login">Entrar</a>
-                <a href="/backend/register.php" class="btn-primary">Começar Grátis</a>
+                <a href="/backend/register.php" class="btn-primary">Teste Grátis</a>
             </div>
 
             <!-- Mobile Menu Button -->
@@ -83,17 +83,17 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Transforme <span class="highlight">Leads</span> em <span class="highlight">Clientes</span></h1>
-            <p>A plataforma mais completa para gestão de leads com inteligência artificial, tracking preciso e automação completa.</p>
+            <h1>Utilize o poder dos <span class="highlight">dados</span> para alavancar suas <span class="highlight">vendas</span> pelo WhatsApp!</h1>
+            <p>Rastreie suas conversas e acesse insights valiosos para otimizar suas campanhas. Mais de 5.000 empresas confiam nos insights do VisionMetrics para alavancar suas vendas.</p>
             <div class="hero-cta">
                 <a href="/backend/register.php" class="btn-primary">
-                    Começar Grátis
+                    TESTAR GRÁTIS
                     <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                     </svg>
                 </a>
                 <a href="#features" class="btn-secondary">
-                    Ver Recursos
+                    Ver Funcionalidades
                     <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -105,8 +105,8 @@
     <!-- Features Section -->
     <section class="features" id="features">
         <div class="features-content">
-            <h2 class="section-title">Tudo o que você precisa para gerenciar leads</h2>
-            <p class="section-subtitle">Nossa plataforma oferece recursos que otimizam sua operação e garantem conversões com transparência.</p>
+            <h2 class="section-title">Descubra como o VisionMetrics vai alavancar suas vendas:</h2>
+            <p class="section-subtitle">Uma série de recursos únicos feitos com um único objetivo: aumentar suas vendas!</p>
             
             <div class="features-grid">
                 <div class="feature-card fade-in-up">
@@ -118,14 +118,14 @@
                                 <div class="feature-video-dot green"></div>
                             </div>
                             <video autoplay loop muted playsinline>
-                                <source src="videos/video teste bino.mp4" type="video/mp4">
+                                <source src="videos/video-teste.webm" type="video/mp4">
                             </video>
                         </div>
                         <div class="play-button">▶</div>
                     </div>
-                    <div class="feature-icon blue">📊</div>
-                    <h3 class="feature-title">Dashboard Inteligente</h3>
-                    <p class="feature-description">Visualize métricas em tempo real, acompanhe conversões e tome decisões baseadas em dados precisos.</p>
+                    <div class="feature-icon blue">💰</div>
+                    <h3 class="feature-title">Identificação Automática de Vendas</h3>
+                    <p class="feature-description">O VisionMetrics é capaz de ler suas conversas e identificar quando acontece uma venda. Além disso, o VisionMetrics também consegue identificar o valor da venda. Tudo de forma automática!</p>
         </div>
         
                 <div class="feature-card fade-in-up">
@@ -137,14 +137,14 @@
                                 <div class="feature-video-dot green"></div>
                             </div>
                             <video autoplay loop muted playsinline>
-                                <source src="videos/video teste bino.mp4" type="video/mp4">
+                                <source src="videos/video-teste.webm" type="video/mp4">
                             </video>
                         </div>
                         <div class="play-button">▶</div>
                     </div>
-                    <div class="feature-icon yellow">⚡</div>
-                    <h3 class="feature-title">Tracking Avançado</h3>
-                    <p class="feature-description">Rastreie cada interação do usuário, desde a origem até a conversão, com precisão milimétrica.</p>
+                    <div class="feature-icon yellow">🔍</div>
+                    <h3 class="feature-title">Rastreamento de Conversas</h3>
+                    <p class="feature-description">O VisionMetrics é capaz de descobrir, de forma automática, qual a campanha, conjunto e anúncio que originou aquela conversa.</p>
         </div>
         
                 <div class="feature-card fade-in-up">
@@ -156,14 +156,14 @@
                                 <div class="feature-video-dot green"></div>
                             </div>
                             <video autoplay loop muted playsinline>
-                                <source src="videos/video teste bino.mp4" type="video/mp4">
+                                <source src="videos/video-teste.webm" type="video/mp4">
                             </video>
                         </div>
                         <div class="play-button">▶</div>
                     </div>
-                    <div class="feature-icon green">💬</div>
-                    <h3 class="feature-title">Integração WhatsApp</h3>
-                    <p class="feature-description">Conecte diretamente com seus leads via WhatsApp e automatize o processo de qualificação.</p>
+                    <div class="feature-icon green">🔗</div>
+                    <h3 class="feature-title">Integração Meta Ads e Google Ads</h3>
+                    <p class="feature-description">O VisionMetrics envia dados para o Meta Ads de forma 100% automática e disponibiliza relatórios prontos para serem importados no Google Ads.</p>
                 </div>
             </div>
         </div>
@@ -191,7 +191,7 @@
                                     <div class="step-video-dot green"></div>
                                 </div>
                                 <video autoplay loop muted playsinline>
-                                    <source src="videos/video teste bino.mp4" type="video/mp4">
+                                    <source src="videos/video-teste.webm" type="video/mp4">
                                 </video>
                             </div>
                             <div class="play-button">▶</div>
@@ -214,7 +214,7 @@
                                     <div class="step-video-dot green"></div>
                                 </div>
                                 <video autoplay loop muted playsinline>
-                                    <source src="videos/video teste bino.mp4" type="video/mp4">
+                                    <source src="videos/video-teste.webm" type="video/mp4">
                                 </video>
                             </div>
                             <div class="play-button">▶</div>
@@ -237,7 +237,7 @@
                                     <div class="step-video-dot green"></div>
                                 </div>
                                 <video autoplay loop muted playsinline>
-                                    <source src="videos/video teste bino.mp4" type="video/mp4">
+                                    <source src="videos/video-teste.webm" type="video/mp4">
                                 </video>
                             </div>
                             <div class="play-button">▶</div>
@@ -260,7 +260,7 @@
                                     <div class="step-video-dot green"></div>
                                 </div>
                                 <video autoplay loop muted playsinline>
-                                    <source src="videos/video teste bino.mp4" type="video/mp4">
+                                    <source src="videos/video-teste.webm" type="video/mp4">
                                 </video>
                             </div>
                             <div class="play-button">▶</div>
@@ -279,12 +279,10 @@
             
             <div class="integration-grid">
                 <div class="integration-visual">
-                    <div class="integration-screenshot" style="background: linear-gradient(135deg, #4A154B 0%, #36C5F0 50%, #2EB67D 100%); height: 300px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: 600;">
-                        <div style="text-align: center;">
-                            <div style="font-size: 48px; margin-bottom: 16px;">💬</div>
-                            <div>Slack Integration</div>
-                            <div style="font-size: 14px; opacity: 0.8; margin-top: 8px;">Gestão de leads direto no Slack</div>
-                        </div>
+                    <div class="integration-screenshot">
+                        <img src="videos/JUAN-DUNDAS-SQUARE.webp" 
+                             alt="Slack Integration Screenshot" 
+                             style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
                     </div>
                     <div class="integration-icon" style="background: linear-gradient(45deg, #4A154B, #36C5F0, #2EB67D, #ECB22E); color: white;">💬</div>
                 </div>
