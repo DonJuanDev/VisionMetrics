@@ -352,42 +352,48 @@
             
             <div class="pricing-cards">
                 <div class="pricing-card">
-                    <h3 class="pricing-title">Start</h3>
-                    <p class="pricing-description">Ideal para gestores individuais</p>
-                    <div class="pricing-price">R$80<span class="pricing-period">/mês</span></div>
+                    <h3 class="pricing-title">Starter</h3>
+                    <p class="pricing-description">Para quem está começando a vender pela internet</p>
+                    <div class="pricing-price">R$ 99<span class="pricing-period">,99/mês</span></div>
                     <ul class="pricing-features">
-                        <li><span class="check-icon">✓</span> Convide mais 1 gestor parceiro</li>
-                        <li><span class="check-icon">✓</span> Colaboradores ilimitados</li>
+                        <li><span class="check-icon">✓</span> 1 número de WhatsApp rastreado</li>
+                        <li><span class="check-icon">✓</span> Conversas ilimitadas</li>
+                        <li><span class="check-icon">✓</span> Rastreamento de Leads</li>
+                        <li><span class="check-icon">✓</span> Dashboard para visualização dos dados</li>
                     </ul>
-                    <button class="pricing-button secondary">Testar grátis por 30 dias</button>
+                    <button class="pricing-button secondary">Testar grátis por 7 dias</button>
                 </div>
                 
                 <div class="pricing-card popular">
                     <div class="popular-badge">MAIS POPULAR</div>
-                    <h3 class="pricing-title">Business</h3>
-                    <p class="pricing-description">Perfeito para equipes em crescimento</p>
-                    <div class="pricing-price">R$150<span class="pricing-period">/mês</span></div>
+                    <h3 class="pricing-title">Advanced</h3>
+                    <p class="pricing-description">Para quem já vende pela internet</p>
+                    <div class="pricing-price">R$ 180<span class="pricing-period">/mês</span></div>
                     <ul class="pricing-features">
-                        <li><span class="check-icon">✓</span> Convide mais 3 gestores parceiros</li>
-                        <li><span class="check-icon">✓</span> Colaboradores ilimitados</li>
+                        <li><span class="check-icon">✓</span> Tudo do plano Inicial e mais...</li>
+                        <li><span class="check-icon">✓</span> Disparo de Webhook</li>
+                        <li><span class="check-icon">✓</span> Envio de dados para o Meta Ads e Google Ads</li>
+                        <li><span class="check-icon">✓</span> Acesso à relatórios e dashboard para terceiros</li>
                     </ul>
                     <button class="pricing-button primary">Começar Agora</button>
                 </div>
                 
                 <div class="pricing-card">
-                    <h3 class="pricing-title">Enterprise</h3>
+                    <h3 class="pricing-title">Custom</h3>
                     <p class="pricing-description">Para empresas com múltiplas equipes</p>
-                    <div class="pricing-price">R$300<span class="pricing-period">/mês</span></div>
+                    <div class="pricing-price">Valor a combinar</div>
                     <ul class="pricing-features">
-                        <li><span class="check-icon">✓</span> Convide mais 6 gestores parceiros</li>
-                        <li><span class="check-icon">✓</span> Colaboradores ilimitados</li>
+                        <li><span class="check-icon">✓</span> Tudo do plano Escala e mais...</li>
+                        <li><span class="check-icon">✓</span> Descontos a partir de 65%</li>
+                        <li><span class="check-icon">✓</span> Atendimento Prioritário</li>
+                        <li><span class="check-icon">✓</span> Call de implementação com nosso time</li>
                     </ul>
-                    <button class="pricing-button secondary">Testar grátis por 30 dias</button>
+                    <button class="pricing-button secondary">Testar grátis por 7 dias</button>
             </div>
         </div>
         
             <p style="text-align: center; margin-top: 40px; font-size: 14px; color: var(--text-muted);">
-                * Todos os planos possuem um período grátis de 30 dias e você será notificado quando estiver perto do fim para cancelar ou continuar conosco! :)<br>
+                * Todos os planos possuem um período grátis de 7 dias e você será notificado quando estiver perto do fim para cancelar ou continuar conosco! :)<br>
                 OBS: se torna responsabilidade do usuário cancelar antes do fim do período para não ser cobrado o valor do plano escolhido.
             </p>
         </div>
