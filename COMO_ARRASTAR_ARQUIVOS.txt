@@ -1,0 +1,120 @@
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                                                                           ║
+║   📂 COMO ARRASTAR ARQUIVOS (FILE MANAGER DO HOSTINGER)                  ║
+║                                                                           ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+
+═══════════════════════════════════════════════════════════════════════════
+  MÉTODO 1: ARRASTAR E SOLTAR (MAIS FÁCIL)
+═══════════════════════════════════════════════════════════════════════════
+
+1. ABRIR O FILE MANAGER
+
+   → Entre no hPanel do Hostinger
+   → Clique em: ARQUIVOS
+   → Clique em: Gerenciador de Arquivos
+   → Uma nova aba vai abrir
+
+
+2. NAVEGAR ATÉ A PASTA CORRETA
+
+   → No File Manager, clique em: public_html
+   → Esta é a pasta onde vai tudo
+
+
+3. PREPARAR OS ARQUIVOS NO SEU PC
+
+   → Abra o Windows Explorer
+   → Navegue até: C:\Users\donju\Documents\teste vision
+   → Selecione TUDO (Ctrl+A)
+
+
+4. ARRASTAR
+
+   → Com os arquivos selecionados
+   → Arraste para a janela do navegador (File Manager)
+   → Solte
+   → Vai aparecer: "Fazer upload de arquivos?"
+   → Clique em: OK ou Upload
+
+
+5. AGUARDAR
+
+   → Barra de progresso vai aparecer
+   → Aguarde até 100%
+   → ✅ Upload concluído!
+
+
+═══════════════════════════════════════════════════════════════════════════
+  MÉTODO 2: BOTÃO UPLOAD (ALTERNATIVA)
+═══════════════════════════════════════════════════════════════════════════
+
+Se arrastar não funcionar:
+
+1. No File Manager, clique em: UPLOAD (botão no topo)
+
+2. Clique em: Selecionar Arquivos
+
+3. No seu PC: C:\Users\donju\Documents\teste vision
+   → Selecione TUDO (Ctrl+A)
+   → Clique em: Abrir
+
+4. Aguarde o upload terminar
+
+
+═══════════════════════════════════════════════════════════════════════════
+  DICAS IMPORTANTES:
+═══════════════════════════════════════════════════════════════════════════
+
+✅ CERTIFIQUE-SE DE ENVIAR:
+
+   → Arquivo .env (tem suas credenciais!)
+   → Arquivo .htaccess (segurança)
+   → Pasta vendor/ (COMPLETA - pode demorar mais)
+   → Pasta backend/
+   → Pasta frontend/
+   → Pasta src/
+   → Todos os outros arquivos
+
+⚠️  A pasta vendor/ é grande, pode demorar mais
+    Não cancele o upload!
+
+⚠️  Se der erro de timeout:
+    → Faça upload em partes (primeiro backend, depois frontend, etc)
+
+
+═══════════════════════════════════════════════════════════════════════════
+  VERIFICAR SE DEU CERTO:
+═══════════════════════════════════════════════════════════════════════════
+
+No File Manager, você deve ver em public_html/:
+
+✅ backend/
+✅ frontend/
+✅ src/
+✅ vendor/
+✅ sql/
+✅ logs/
+✅ uploads/
+✅ .env
+✅ .htaccess
+✅ index.php
+✅ composer.json
+✅ check_hostinger.php
+✅ E outros arquivos...
+
+
+═══════════════════════════════════════════════════════════════════════════
+  DEPOIS DO UPLOAD:
+═══════════════════════════════════════════════════════════════════════════
+
+Vá para: FACIL_SO_2_PASSOS.txt (Passo 2 - Importar banco)
+
+
+═══════════════════════════════════════════════════════════════════════════
+
+É FÁCIL! SÓ ARRASTAR! 🚀
+
+

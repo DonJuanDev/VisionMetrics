@@ -1,0 +1,84 @@
+╔════════════════════════════════════════════════════════════════╗
+║                                                                ║
+║   🚨 ERRO: "Database connection error"                        ║
+║                                                                ║
+║   SOLUÇÃO: Fazer upload de 3 arquivos!                        ║
+║                                                                ║
+╚════════════════════════════════════════════════════════════════╝
+
+
+═══════════════════════════════════════════════════════════════
+  FAÇA UPLOAD DESTES 3 ARQUIVOS AGORA:
+═══════════════════════════════════════════════════════════════
+
+📁 ARQUIVO 1: env_RENOMEIE_PARA_dotenv.txt
+   └─ LOCAL: C:\Users\donju\Documents\teste vision\env_RENOMEIE_PARA_dotenv.txt
+   └─ DESTINO: public_html/env_RENOMEIE_PARA_dotenv.txt
+   └─ DEPOIS: Renomeie para ".env" no File Manager
+   └─ IMPORTANTE: Este arquivo TEM QUE estar no public_html/
+
+
+📁 ARQUIVO 2: backend/register.php
+   └─ LOCAL: C:\Users\donju\Documents\teste vision\backend\register.php
+   └─ DESTINO: public_html/backend/register.php
+
+
+📁 ARQUIVO 3: backend/login.php
+   └─ LOCAL: C:\Users\donju\Documents\teste vision\backend\login.php
+   └─ DESTINO: public_html/backend/login.php
+
+
+═══════════════════════════════════════════════════════════════
+  COMO FAZER UPLOAD (File Manager Hostinger):
+═══════════════════════════════════════════════════════════════
+
+1. Abra o hPanel → Arquivos → Gerenciador de Arquivos
+
+2. Entre na pasta: public_html/
+
+3. ARRASTE o arquivo: env_RENOMEIE_PARA_dotenv.txt
+   (do seu PC para o File Manager)
+
+4. RENOMEIE o arquivo de "env_RENOMEIE_PARA_dotenv.txt" para ".env"
+   (Clique direito no arquivo → Renomear → Digite ".env")
+
+5. Entre na pasta: public_html/backend/
+
+6. ARRASTE os arquivos:
+   - register.php
+   - login.php
+
+
+═══════════════════════════════════════════════════════════════
+  ⚠️  IMPORTANTE SOBRE O .env:
+═══════════════════════════════════════════════════════════════
+
+O arquivo .env contém suas credenciais do banco:
+  ✅ DB_NAME=u604248417_visionmetrics
+  ✅ DB_USER=u604248417_visionmetrics
+  ✅ DB_PASS=182876Jj?
+
+Este arquivo precisa estar em: public_html/.env
+
+
+═══════════════════════════════════════════════════════════════
+  DEPOIS DE FAZER UPLOAD:
+═══════════════════════════════════════════════════════════════
+
+1. Limpe o cache do navegador: Ctrl + Shift + R
+
+2. Acesse: https://visionmetricsapp.com/backend/register.php
+
+3. Crie sua conta!
+
+
+═══════════════════════════════════════════════════════════════
+
+TEMPO ESTIMADO: 3 minutos
+
+╔════════════════════════════════════════════════════════════════╗
+║  DICA: Se o .env não aparecer no File Manager depois do       ║
+║  upload, clique em "Mostrar arquivos ocultos" no canto        ║
+║  superior direito do File Manager                             ║
+╚════════════════════════════════════════════════════════════════╝
+

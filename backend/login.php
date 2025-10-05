@@ -1,72 +1,55 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-// Se já está logado, redirecionar para dashboard
+// If already logged in, redirect to dashboard
 if (isset($_SESSION['user_id'])) {
     header('Location: /backend/dashboard.php');
     exit;
 }
 
-// Processar login
-$error = null;
+$error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Verify CSRF token
-    csrf_verify();
-    
-    $email = $_POST['email'] ?? '';
+    $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
-    
-    if ($email && $password) {
-        // Check rate limiting
-        $identifier = $email . '|' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
-        if (!checkRateLimit($identifier)) {
-            $error = 'Muitas tentativas de login. Tente novamente em 15 minutos.';
-        } else {
-            try {
-                $db = getDB();
+
+    if (empty($email) || empty($password)) {
+        $error = 'Email e senha são obrigatórios';
+    } else {
+        try {
+            $db = getDB();
+            
+            $stmt = $db->prepare("SELECT id, password_hash FROM users WHERE email = ?");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch();
+            
+            if ($user && password_verify($password, $user['password_hash'])) {
+                // Login successful
+                $_SESSION['user_id'] = $user['id'];
                 
-                // Buscar usuário
-                $stmt = $db->prepare("SELECT * FROM users WHERE email = ?");
-                $stmt->execute([$email]);
-                $user = $stmt->fetch();
+                // Get user's workspace
+                $stmt = $db->prepare("
+                    SELECT w.id 
+                    FROM workspaces w
+                    JOIN workspace_members wm ON w.id = wm.workspace_id
+                    WHERE wm.user_id = ?
+                    LIMIT 1
+                ");
+                $stmt->execute([$user['id']]);
+                $workspace = $stmt->fetch();
                 
-                if ($user && password_verify($password, $user['password_hash'])) {
-                    // Login bem-sucedido
-                    recordLoginAttempt($identifier, true);
-                    
-                    $_SESSION['user_id'] = $user['id'];
-                    $_SESSION['user_email'] = $user['email'];
-                    $_SESSION['user_name'] = $user['name'];
-                    
-                    // Buscar workspace
-                    $stmt = $db->prepare("
-                        SELECT w.* FROM workspaces w
-                        INNER JOIN workspace_members wm ON w.id = wm.workspace_id
-                        WHERE wm.user_id = ?
-                        LIMIT 1
-                    ");
-                    $stmt->execute([$user['id']]);
-                    $workspace = $stmt->fetch();
-                    
-                    if ($workspace) {
-                        $_SESSION['workspace_id'] = $workspace['id'];
-                    }
-                    
-                    header('Location: /backend/dashboard.php');
-                    exit;
-                } else {
-                    recordLoginAttempt($identifier, false);
-                    $error = 'Email ou senha inválidos';
+                if ($workspace) {
+                    $_SESSION['workspace_id'] = $workspace['id'];
                 }
                 
-            } catch (Exception $e) {
-                recordLoginAttempt($identifier, false);
-                $error = 'Erro ao fazer login';
+                header('Location: /backend/dashboard.php');
+                exit;
+            } else {
+                $error = 'Email ou senha incorretos';
             }
+        } catch (Exception $e) {
+            $error = 'Erro: ' . $e->getMessage();
         }
-    } else {
-        $error = 'Preencha email e senha';
     }
 }
 ?>
@@ -78,294 +61,463 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Login - VisionMetrics</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/frontend/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0A0A0B;
-            --bg-secondary: #111113;
-            --bg-glass: rgba(255, 255, 255, 0.05);
-            --bg-glass-hover: rgba(255, 255, 255, 0.1);
-            --text-primary: #FFFFFF;
-            --text-secondary: #A1A1AA;
-            --text-muted: #71717A;
-            --primary: #8B5CF6;
-            --secondary: #3B82F6;
-            --accent: #10B981;
-            --gradient-primary: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%);
-            --gradient-secondary: linear-gradient(135deg, #3B82F6 0%, #10B981 100%);
-            --gradient-accent: linear-gradient(135deg, #10B981 0%, #F59E0B 100%);
-            --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-            --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3);
-            --shadow-glass-hover: 0 12px 40px rgba(0, 0, 0, 0.4);
-            --radius: 8px;
-            --radius-lg: 12px;
-            --radius-xl: 16px;
-            --transition-normal: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --gradient-primary: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 50%, #10B981 100%);
+            --gradient-secondary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --shadow-glow: 0 20px 60px rgba(139, 92, 246, 0.3);
+            --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-primary);
             min-height: 100vh;
+            display: flex;
+            background: #0A0A0B;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Animated Background */
+        .left {
+            flex: 1;
+            background: var(--gradient-primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            color: white;
             position: relative;
             overflow: hidden;
         }
 
-        /* Background Animation */
-        body::before {
+        .left::before {
             content: '';
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            right: 0;
+            bottom: 0;
             background: 
-                radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.3) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.2) 0%, transparent 50%);
-            z-index: -1;
-            animation: backgroundShift 20s ease-in-out infinite;
+                radial-gradient(circle at 40% 80%, rgba(16, 185, 129, 0.3) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
         }
 
-        @keyframes backgroundShift {
-            0%, 100% { transform: translateX(0) translateY(0) scale(1); }
-            33% { transform: translateX(-20px) translateY(-20px) scale(1.1); }
-            66% { transform: translateX(20px) translateY(20px) scale(0.9); }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(1deg); }
         }
 
-        .login-container {
-            background: var(--bg-glass);
+        /* Grid Pattern */
+        .left::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .left-content {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-circle {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 24px;
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-glass);
-            padding: 48px;
-            width: 100%;
-            max-width: 440px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+            }
+        }
+
+        .left-content h1 {
+            font-size: 56px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            font-family: 'Poppins', sans-serif;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .left-content p {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 400px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Right Side */
+        .right {
+            flex: 1;
+            background: #0A0A0B;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px;
             position: relative;
-            z-index: 1;
+            overflow: hidden;
         }
 
-        .logo {
+        .right::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .auth-form {
+            max-width: 420px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .auth-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 48px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
         }
 
-        .logo h1 {
-            font-size: 36px;
+        .auth-title {
+            font-size: 42px;
             font-weight: 800;
             background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             font-family: 'Poppins', sans-serif;
         }
 
-        .logo p {
-            color: var(--text-secondary);
+        .auth-subtitle {
             font-size: 16px;
-            font-weight: 400;
+            color: #B0B0B0;
+            font-weight: 500;
+        }
+
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            animation: shake 0.5s ease-out;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #FCA5A5;
         }
 
         .form-group {
             margin-bottom: 24px;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
         }
 
-        label {
+        .form-label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text-primary);
+            margin-bottom: 10px;
             font-size: 14px;
+            font-weight: 600;
+            color: #FFFFFF;
+            letter-spacing: 0.3px;
         }
 
-        input {
+        .form-input {
             width: 100%;
             padding: 16px 20px;
-            background: var(--bg-glass);
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-lg);
-            font-size: 15px;
-            color: var(--text-primary);
-            transition: var(--transition-normal);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            color: #FFFFFF;
+            font-weight: 500;
         }
 
-        input::placeholder {
-            color: var(--text-muted);
-        }
-
-        input:focus {
+        .form-input:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-            background: var(--bg-glass-hover);
+            border-color: #8B5CF6;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+            transform: translateY(-2px);
         }
 
-        .btn-login {
+        .form-input::placeholder {
+            color: #808080;
+        }
+
+        .btn {
             width: 100%;
             padding: 16px;
-            background: var(--gradient-primary);
-            color: white;
             border: none;
-            border-radius: var(--radius-lg);
+            border-radius: 12px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .btn-login::before {
+        .btn::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
         }
 
-        .btn-login:hover::before {
+        .btn:hover::before {
             left: 100%;
         }
 
-        .btn-login:hover {
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            margin-bottom: 16px;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.5);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            animation: fadeInUp 0.8s ease-out 0.7s both;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
             transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(139, 92, 246, 0.4);
         }
 
-        .error {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #FCA5A5;
-            padding: 16px 20px;
-            border-radius: var(--radius-lg);
-            margin-bottom: 24px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-
-        .demo {
-            margin-top: 24px;
-            padding: 20px;
-            background: var(--bg-glass);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-lg);
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .demo code {
-            background: rgba(139, 92, 246, 0.2);
-            padding: 4px 8px;
-            border-radius: var(--radius);
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .auth-links {
-            margin-top: 24px;
+        .auth-footer {
             text-align: center;
-            padding-top: 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 32px;
+            color: #B0B0B0;
+            font-size: 14px;
+            animation: fadeInUp 0.8s ease-out 0.8s both;
         }
 
-        .auth-links a {
-            color: var(--primary);
+        .auth-footer a {
+            color: #8B5CF6;
             text-decoration: none;
             font-weight: 600;
-            transition: var(--transition-normal);
+            transition: all 0.3s ease;
         }
 
-        .auth-links a:hover {
-            color: var(--secondary);
+        .auth-footer a:hover {
+            color: #A78BFA;
             text-decoration: underline;
         }
 
-        .auth-links p {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 8px;
+        /* Floating Particles */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: floatParticle 20s linear infinite;
         }
 
-        /* Mobile */
-        @media (max-width: 768px) {
-            .login-container {
-                padding: 32px 24px;
-                margin: 10px;
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 968px) {
+            .container {
+                flex-direction: column;
             }
             
-            .logo h1 {
+            .left {
+                min-height: 35vh;
+            }
+
+            .left-content h1 {
+                font-size: 36px;
+            }
+            
+            .right {
+                padding: 40px 24px;
+            }
+
+            .auth-title {
+                font-size: 32px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-title {
                 font-size: 28px;
+            }
+
+            .form-input {
+                padding: 14px 16px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="logo">
-            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-                <div style="width: 48px; height: 48px; background: var(--gradient-primary); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-right: 16px; box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <div class="container">
+        <div class="left">
+            <div class="left-content">
+                <div class="logo-circle">
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
                         <path d="M4 4L4 8L8 12L4 16L4 20L12 12L4 4Z" fill="white"/>
-                        <path d="M20 4L20 8L16 12L20 16L20 20L12 12L20 4Z" fill="#A78BFA"/>
+                        <path d="M20 4L20 8L16 12L20 16L20 20L12 12L20 4Z" fill="rgba(255, 255, 255, 0.7)"/>
                     </svg>
                 </div>
-            </div>
-            <h1>VisionMetrics</h1>
-            <p>Gerencie seus leads com inteligência</p>
-        </div>
-        
-        <?php if ($error): ?>
-        <div class="error"><?= htmlspecialchars($error) ?></div>
-        <?php endif; ?>
-        
-        <form method="POST">
-            <?= csrf_field() ?>
-            
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" name="email" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" required autofocus placeholder="seu@email.com">
+                <h1>VisionMetrics</h1>
+                <p>A plataforma mais avançada para gestão de leads com inteligência artificial</p>
             </div>
             
-            <div class="form-group">
-                <label>Senha</label>
-                <input type="password" name="password" required placeholder="Sua senha">
+            <!-- Floating Particles -->
+            <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+            <div class="particle" style="left: 30%; animation-delay: 3s;"></div>
+            <div class="particle" style="left: 50%; animation-delay: 6s;"></div>
+            <div class="particle" style="left: 70%; animation-delay: 9s;"></div>
+            <div class="particle" style="left: 90%; animation-delay: 12s;"></div>
+        </div>
+
+        <div class="right">
+            <div class="auth-form">
+                <div class="auth-header">
+                    <h1 class="auth-title">Bem-vindo de volta!</h1>
+                    <p class="auth-subtitle">Entre na sua conta para continuar</p>
+                </div>
+
+                <?php if ($error): ?>
+                <div class="alert alert-error">
+                    <strong>⚠️ Erro:</strong> <?= htmlspecialchars($error) ?>
+                </div>
+                <?php endif; ?>
+
+                <form method="POST">
+                    <div class="form-group">
+                        <label class="form-label">📧 Email</label>
+                        <input type="email" name="email" class="form-input" required autofocus value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" placeholder="seu@email.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">🔒 Senha</label>
+                        <input type="password" name="password" class="form-input" required placeholder="Digite sua senha">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Entrar Agora</button>
+                    <a href="/backend/register.php" style="text-decoration: none;">
+                        <button type="button" class="btn btn-secondary">Criar Nova Conta</button>
+                    </a>
+                </form>
+
+                <div class="auth-footer">
+                    <p><a href="/backend/password-reset-request.php">🔑 Esqueci minha senha</a></p>
+                    <p style="margin-top: 16px;"><a href="/index.php">← Voltar para Home</a></p>
+                </div>
             </div>
-            
-            <button type="submit" class="btn-login">Entrar no Sistema</button>
-        </form>
-        
-        <div class="auth-links">
-            <a href="/backend/password-reset-request.php">
-                Esqueceu sua senha?
-            </a>
-        </div>
-        
-        <div class="demo">
-            <strong>🔑 Credenciais Admin:</strong><br>
-            Email: <code>admin@visionmetrics.com</code><br>
-            Senha: <code>password</code>
-        </div>
-        
-        <div class="auth-links">
-            <p>Não tem uma conta?</p>
-            <a href="/backend/register.php">Criar conta grátis</a>
         </div>
     </div>
 </body>

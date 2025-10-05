@@ -1,0 +1,41 @@
+
+█████████████████████████████████████████████████████████████████████████
+█                                                                       █
+█   PASSO 2: CONECTAR NO FTP                                           █
+█                                                                       █
+█████████████████████████████████████████████████████████████████████████
+
+
+Abra o FileZilla e preencha no topo:
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                                                                     │
+│  Host: ftp.visionmetricsapp.com                                     │
+│                                                                     │
+│  Usuário: [SEU USUÁRIO FTP DO HOSTINGER]                           │
+│                                                                     │
+│  Senha: [SUA SENHA FTP DO HOSTINGER]                               │
+│                                                                     │
+│  Porta: 21                                                          │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+
+Clique em: "Conexão Rápida"
+
+
+⚠️  NÃO TEM USUÁRIO/SENHA FTP?
+
+    1. Entre no hPanel do Hostinger
+    2. Vá em: Arquivos → FTP Accounts
+    3. Veja suas credenciais ou crie uma nova conta FTP
+
+
+═════════════════════════════════════════════════════════════════════════
+
+
+Conectou? Vá para: 3_FACA_UPLOAD.txt
+
+
+

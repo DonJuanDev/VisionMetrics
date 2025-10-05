@@ -1,0 +1,127 @@
+╔════════════════════════════════════════════════════════════════╗
+║                                                                ║
+║   ✅ SOLUÇÃO: Editar o arquivo .env que já existe             ║
+║                                                                ║
+╚════════════════════════════════════════════════════════════════╝
+
+
+═══════════════════════════════════════════════════════════════
+  PASSO A PASSO:
+═══════════════════════════════════════════════════════════════
+
+1. No File Manager, encontre o arquivo: .env
+   (Ele está em: public_html/.env)
+
+2. Clique direito no arquivo .env → "Editar"
+
+3. APAGUE TODO O CONTEÚDO ANTIGO
+
+4. COPIE E COLE o conteúdo abaixo:
+
+
+═══════════════════════════════════════════════════════════════
+  👇 COPIE TUDO DAQUI PARA BAIXO 👇
+═══════════════════════════════════════════════════════════════
+
+# ===================================
+# ARQUIVO .ENV PARA HOSTINGER
+# ===================================
+
+# Aplicação
+APP_NAME=VisionMetrics
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://visionmetricsapp.com
+
+# Banco de Dados (Hostinger)
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=u604248417_visionmetrics
+DB_USER=u604248417_visionmetrics
+DB_PASS=182876Jj?
+
+# Redis (DESABILITADO no Hostinger)
+REDIS_ENABLED=false
+REDIS_HOST=
+REDIS_PORT=6379
+
+# Sessão
+SESSION_NAME=visionmetrics_session
+SESSION_LIFETIME=120
+
+# Segurança
+CSRF_TOKEN_NAME=csrf_token
+ENCRYPTION_KEY=vision_metrics_2024_secure_key_production
+
+# Integração (desabilitado por enquanto)
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI=
+
+# Email (configurar depois)
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.hostinger.com
+MAIL_PORT=587
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=noreply@visionmetricsapp.com
+MAIL_FROM_NAME=VisionMetrics
+
+# Sentry (opcional)
+SENTRY_DSN=
+
+# Feature Flags
+FEATURE_OAUTH_ENABLED=false
+FEATURE_EMAIL_VERIFICATION=false
+FEATURE_TWO_FACTOR=false
+
+# Rate Limiting
+RATE_LIMIT_ENABLED=true
+RATE_LIMIT_MAX_ATTEMPTS=100
+RATE_LIMIT_DECAY_MINUTES=1
+
+# Logs
+LOG_CHANNEL=daily
+LOG_LEVEL=error
+
+═══════════════════════════════════════════════════════════════
+  👆 COPIE TUDO ATÉ AQUI 👆
+═══════════════════════════════════════════════════════════════
+
+
+5. Clique em "Salvar" (ou Save)
+
+6. Feche o editor
+
+7. Pronto! ✅
+
+
+═══════════════════════════════════════════════════════════════
+  DEPOIS:
+═══════════════════════════════════════════════════════════════
+
+• Limpe o cache: Ctrl + Shift + R
+
+• Acesse: https://visionmetricsapp.com/backend/register.php
+
+• Crie sua conta!
+
+
+═══════════════════════════════════════════════════════════════
+  ⚠️  IMPORTANTE:
+═══════════════════════════════════════════════════════════════
+
+As credenciais corretas do banco já estão no conteúdo acima:
+
+  ✅ DB_NAME=u604248417_visionmetrics
+  ✅ DB_USER=u604248417_visionmetrics
+  ✅ DB_PASS=182876Jj?
+
+Não precisa mudar nada!
+
+
+════════════════════════════════════════════════════════════════
+
+⏱️  TEMPO: 1 minuto
+

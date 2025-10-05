@@ -1,0 +1,143 @@
+# ═══════════════════════════════════════════════════════
+# VISIONMETRICS - CONFIGURAÇÃO PARA HOSTINGER
+# ═══════════════════════════════════════════════════════
+# 
+# INSTRUÇÕES:
+# 1. Copie todo este conteúdo
+# 2. Crie um arquivo chamado ".env" (com ponto no início)
+# 3. Cole o conteúdo
+# 4. Altere os valores com ⚠️ OBRIGATÓRIO
+# 5. Faça upload via FTP para a raiz do projeto
+#
+# ═══════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════
+# 1. CONFIGURAÇÕES DA APLICAÇÃO
+# ═══════════════════════════════════════════════════════
+
+APP_NAME=VisionMetrics
+APP_ENV=production
+APP_URL=https://visionmetricsapp.com
+APP_DEBUG=false
+
+# ═══════════════════════════════════════════════════════
+# 2. BANCO DE DADOS ⚠️ OBRIGATÓRIO
+# ═══════════════════════════════════════════════════════
+# Encontre estas informações no Hostinger:
+# hPanel > Banco de Dados > MySQL Databases
+
+DB_HOST=localhost
+DB_NAME=u123456789_visionmetrics
+DB_USER=u123456789_vision
+DB_PASS=SUA_SENHA_DO_BANCO_AQUI_123456
+DB_PORT=3306
+
+# ═══════════════════════════════════════════════════════
+# 3. REDIS (Desabilitado no Hostinger)
+# ═══════════════════════════════════════════════════════
+# O Hostinger não suporta Redis na maioria dos planos
+# Deixe vazio
+
+REDIS_HOST=
+REDIS_PORT=
+REDIS_ENABLED=false
+
+# ═══════════════════════════════════════════════════════
+# 4. SESSÕES
+# ═══════════════════════════════════════════════════════
+
+SESSION_LIFETIME=7200
+SESSION_SECURE=true
+SESSION_NAME=visionmetrics_session
+
+# ═══════════════════════════════════════════════════════
+# 5. SEGURANÇA ⚠️ OBRIGATÓRIO - GERE CHAVES ÚNICAS!
+# ═══════════════════════════════════════════════════════
+# Use: https://www.random.org/strings/
+# Gere 2 strings de 64 caracteres cada
+
+JWT_SECRET=SUBSTITUA_POR_64_CARACTERES_ALEATORIOS_EXEMPLO_a8f9d2c1e4b7f3a6d9e2c5b8f1a4d7e0
+CSRF_TOKEN_SALT=SUBSTITUA_POR_OUTRA_STRING_64_CARACTERES_EXEMPLO_x1y2z3a4b5c6d7e8f9g0h1i2j3k4l5m6
+
+# ═══════════════════════════════════════════════════════
+# 6. INTEGRAÇÕES (Opcional - preencha quando precisar)
+# ═══════════════════════════════════════════════════════
+
+META_ADS_ACCESS_TOKEN=
+META_ADS_PIXEL_ID=
+GA4_MEASUREMENT_ID=
+GA4_API_SECRET=
+TIKTOK_PIXEL_ID=
+TIKTOK_ACCESS_TOKEN=
+
+# ═══════════════════════════════════════════════════════
+# 7. STRIPE BILLING (Opcional - para aceitar pagamentos)
+# ═══════════════════════════════════════════════════════
+
+STRIPE_PUBLIC_KEY=pk_live_xxxxx
+STRIPE_SECRET_KEY=sk_live_xxxxx
+STRIPE_WEBHOOK_SECRET=whsec_xxxxx
+
+# ═══════════════════════════════════════════════════════
+# 8. EMAIL ⚠️ RECOMENDADO
+# ═══════════════════════════════════════════════════════
+# Configure para enviar emails de recuperação de senha
+# Hostinger: hPanel > Emails > Configure mail client
+
+SMTP_HOST=smtp.hostinger.com
+SMTP_PORT=587
+SMTP_USER=contato@visionmetricsapp.com
+SMTP_PASS=SUA_SENHA_DE_EMAIL_AQUI
+SMTP_FROM_EMAIL=contato@visionmetricsapp.com
+SMTP_FROM_NAME=VisionMetrics
+
+# ═══════════════════════════════════════════════════════
+# 9. FUNCIONALIDADES
+# ═══════════════════════════════════════════════════════
+
+FEATURE_REAL_TIME=true
+FEATURE_WORKFLOWS=true
+FEATURE_CUSTOM_FIELDS=true
+
+# ═══════════════════════════════════════════════════════
+# 10. RATE LIMITING (Proteção contra spam)
+# ═══════════════════════════════════════════════════════
+
+RATE_LIMIT_ENABLED=true
+RATE_LIMIT_MAX_REQUESTS=100
+RATE_LIMIT_WINDOW=60
+
+# ═══════════════════════════════════════════════════════
+# 11. LOGS
+# ═══════════════════════════════════════════════════════
+
+LOG_LEVEL=INFO
+LOG_CHANNEL=daily
+LOG_PATH=./logs
+
+# ═══════════════════════════════════════════════════════
+# 12. MODO DE ADAPTADORES
+# ═══════════════════════════════════════════════════════
+# simulate = apenas simula envios (teste)
+# live = envia dados reais para Meta Ads, GA4, etc
+
+ADAPTER_MODE=simulate
+
+# ═══════════════════════════════════════════════════════
+# 13. VERIFICAÇÃO DE EMAIL
+# ═══════════════════════════════════════════════════════
+# true = usuários precisam verificar email para usar
+# false = não obriga verificação
+
+REQUIRE_EMAIL_VERIFICATION=false
+
+# ═══════════════════════════════════════════════════════
+# 14. SENTRY (Monitoramento de erros - Opcional)
+# ═══════════════════════════════════════════════════════
+
+SENTRY_DSN=
+
+# ═══════════════════════════════════════════════════════
+# FIM DA CONFIGURAÇÃO
+# ═══════════════════════════════════════════════════════
+

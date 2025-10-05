@@ -1,13 +1,36 @@
 <?php
+// Load environment variables
+if (file_exists(__DIR__ . '/../.env')) {
+    $lines = file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos(trim($line), '#') === 0) continue;
+        list($name, $value) = explode('=', $line, 2);
+        $name = trim($name);
+        $value = trim($value);
+        if (!array_key_exists($name, $_ENV)) {
+            putenv(sprintf('%s=%s', $name, $value));
+            $_ENV[$name] = $value;
+            $_SERVER[$name] = $value;
+        }
+    }
+}
+
 // Start session
 if (session_status() == PHP_SESSION_NONE) {
+    session_name(getenv('SESSION_NAME') ?: 'visionmetrics_session');
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.use_strict_mode', 1);
+    ini_set('session.cookie_samesite', 'Lax');
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        ini_set('session.cookie_secure', 1);
+    }
     session_start();
 }
 
 // Application constants
-define('APP_NAME', 'VisionMetrics');
+define('APP_NAME', getenv('APP_NAME') ?: 'VisionMetrics');
 define('APP_VERSION', '1.0.0');
-define('APP_URL', getenv('APP_URL') ?: 'http://localhost:3000');
+define('APP_URL', getenv('APP_URL') ?: 'https://visionmetricsapp.com');
 
 // Database connection
 function getDB() {
@@ -17,22 +40,26 @@ function getDB() {
         try {
             $dsn = sprintf(
                 'mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
-                getenv('DB_HOST') ?: 'mysql',
+                getenv('DB_HOST') ?: 'localhost',
                 getenv('DB_PORT') ?: '3306',
                 getenv('DB_NAME') ?: 'visionmetrics'
             );
             
             $pdo = new PDO(
                 $dsn,
-                getenv('DB_USER') ?: 'visionmetrics',
-                getenv('DB_PASS') ?: 'visionmetrics',
+                getenv('DB_USER') ?: 'root',
+                getenv('DB_PASS') ?: '',
                 [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false
                 ]
             );
         } catch (PDOException $e) {
-            die('Database error');
+            if (getenv('APP_DEBUG') === 'true') {
+                die('Database connection error: ' . $e->getMessage());
+            }
+            die('Database connection error. Please check your configuration.');
         }
     }
     

@@ -3,9 +3,9 @@
 # Enable Rewrite Engine
 RewriteEngine On
 
-# Force HTTPS (descomente em produção)
-# RewriteCond %{HTTPS} off
-# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# Force HTTPS (ativo em produção)
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # Short links redirect
 RewriteRule ^l/([a-zA-Z0-9-]+)$ /l.php?slug=$1 [L,QSA]
@@ -35,10 +35,19 @@ RewriteRule ^l/([a-zA-Z0-9-]+)$ /l.php?slug=$1 [L,QSA]
 Options -Indexes
 
 # Protect sensitive files
-<FilesMatch "\.(env|log|sql|md|txt)$">
+<FilesMatch "\.(env|log|sql|md|txt|json|lock|yml|yaml|sh|gitignore)$">
     Order allow,deny
     Deny from all
 </FilesMatch>
+
+# Protect specific directories
+RedirectMatch 403 ^/\.git
+RedirectMatch 403 ^/vendor
+RedirectMatch 403 ^/sql
+RedirectMatch 403 ^/tests
+RedirectMatch 403 ^/docker
+RedirectMatch 403 ^/scripts
+RedirectMatch 403 ^/worker
 
 # Cache static assets
 <IfModule mod_expires.c>

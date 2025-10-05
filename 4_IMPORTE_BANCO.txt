@@ -1,0 +1,44 @@
+
+█████████████████████████████████████████████████████████████████████████
+█                                                                       █
+█   PASSO 4: IMPORTAR BANCO DE DADOS                                   █
+█                                                                       █
+█████████████████████████████████████████████████████████████████████████
+
+
+1. Entre no hPanel do Hostinger
+
+2. Vá em: Banco de Dados → phpMyAdmin
+
+3. No lado esquerdo, clique em: visionmetrics
+
+4. Clique na aba: Importar
+
+5. Clique em: Escolher arquivo
+
+6. Selecione: sql/schema.sql (da pasta do projeto no seu PC)
+
+7. Role até o final da página
+
+8. Clique em: Executar
+
+9. Aguarde...
+
+10. ✅ Importação concluída com sucesso!
+
+
+═════════════════════════════════════════════════════════════════════════
+
+OPCIONAL - Dados de Exemplo:
+
+Repita o processo importando: sql/seed.sql
+(Isso cria leads e conversas de exemplo)
+
+
+═════════════════════════════════════════════════════════════════════════
+
+
+Banco importado? Vá para: 5_TESTE_AGORA.txt
+
+
+

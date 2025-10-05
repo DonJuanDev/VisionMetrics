@@ -11,8 +11,28 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 
 // Load environment variables
 if (class_exists('Dotenv\Dotenv')) {
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
-    $dotenv->safeLoad();
+    try {
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+        $dotenv->safeLoad();
+    } catch (Exception $e) {
+        // Fallback: load .env manually for Hostinger
+        if (file_exists(__DIR__ . '/../.env')) {
+            $lines = file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            foreach ($lines as $line) {
+                if (strpos(trim($line), '#') === 0 || empty(trim($line))) continue;
+                $parts = explode('=', $line, 2);
+                if (count($parts) === 2) {
+                    $name = trim($parts[0]);
+                    $value = trim($parts[1]);
+                    if (!array_key_exists($name, $_ENV)) {
+                        putenv(sprintf('%s=%s', $name, $value));
+                        $_ENV[$name] = $value;
+                        $_SERVER[$name] = $value;
+                    }
+                }
+            }
+        }
+    }
 }
 
 // Constants
@@ -21,13 +41,14 @@ define('APP_URL', $_ENV['APP_URL'] ?? 'http://localhost:3000');
 define('APP_ENV', $_ENV['APP_ENV'] ?? 'production');
 define('APP_DEBUG', filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOLEAN));
 
-define('DB_HOST', $_ENV['DB_HOST'] ?? 'mysql');
+define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
 define('DB_NAME', $_ENV['DB_NAME'] ?? 'visionmetrics');
-define('DB_USER', $_ENV['DB_USER'] ?? 'visionmetrics');
-define('DB_PASS', $_ENV['DB_PASS'] ?? 'visionmetrics');
+define('DB_USER', $_ENV['DB_USER'] ?? 'root');
+define('DB_PASS', $_ENV['DB_PASS'] ?? '');
 
-define('REDIS_HOST', $_ENV['REDIS_HOST'] ?? 'redis');
+define('REDIS_HOST', $_ENV['REDIS_HOST'] ?? '');
 define('REDIS_PORT', $_ENV['REDIS_PORT'] ?? 6379);
+define('REDIS_ENABLED', filter_var($_ENV['REDIS_ENABLED'] ?? false, FILTER_VALIDATE_BOOLEAN));
 
 define('ADAPTER_MODE', $_ENV['ADAPTER_MODE'] ?? 'simulate');
 

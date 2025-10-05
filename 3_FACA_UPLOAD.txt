@@ -1,0 +1,49 @@
+
+█████████████████████████████████████████████████████████████████████████
+█                                                                       █
+█   PASSO 3: FAZER UPLOAD                                              █
+█                                                                       █
+█████████████████████████████████████████████████████████████████████████
+
+
+No FileZilla você verá 2 lados:
+
+
+┌──────────────────────────────────┬──────────────────────────────────┐
+│  ESQUERDA (Seu Computador)       │  DIREITA (Servidor Hostinger)    │
+├──────────────────────────────────┼──────────────────────────────────┤
+│                                  │                                  │
+│  Navegue até:                    │  Navegue até:                    │
+│  C:\Users\donju\Documents\       │  /public_html                    │
+│  teste vision                    │                                  │
+│                                  │                                  │
+└──────────────────────────────────┴──────────────────────────────────┘
+
+
+AGORA FAÇA:
+
+1. No lado ESQUERDO:
+   → Selecione TUDO (Ctrl+A)
+
+2. Arraste para o lado DIREITO (public_html)
+
+3. Aguarde terminar (~10 minutos)
+   → Vai mostrar "Transferência bem-sucedida" ✅
+
+
+IMPORTANTE - Certifique-se que foi enviado:
+✅ .env (arquivo com suas credenciais!)
+✅ .htaccess (segurança)
+✅ vendor/ (pasta de dependências)
+✅ backend/
+✅ frontend/
+✅ Tudo mais
+
+
+═════════════════════════════════════════════════════════════════════════
+
+
+Terminou o upload? Vá para: 4_IMPORTE_BANCO.txt
+
+
+
