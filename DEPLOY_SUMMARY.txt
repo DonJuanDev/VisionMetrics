@@ -77,9 +77,9 @@ B. Database Creation
 Method A: Via SSH (Recommended)
 ───────────────────────────────────────────────────────────────────────────────
 1. SSH into your Hostinger account:
-   ssh u123456789@yourdomain.com
+   ssh u123456789@visionmetricsapp.com.br
 
-2. Navigate to public_html (or domains/yourdomain.com):
+2. Navigate to public_html (or domains/visionmetricsapp.com.br):
    cd public_html
 
 3. Clone repository (if you have Git access):
@@ -99,7 +99,7 @@ Method B: Via FileZilla/FTP
 ───────────────────────────────────────────────────────────────────────────────
 1. Get FTP credentials from Hostinger hPanel > Files > FTP Accounts
 2. Connect via FileZilla:
-   Host: ftp.yourdomain.com
+   Host: ftp.visionmetricsapp.com.br
    Username: your_ftp_user
    Password: your_ftp_password
    Port: 21 (or 22 for SFTP)
@@ -142,7 +142,7 @@ Option B: Local Install + Upload
 ─────────────────────────────────────────────────────────────────────────────
 APP_NAME=VisionMetrics
 APP_ENV=production
-APP_URL=https://yourdomain.com
+APP_URL=https://visionmetricsapp.com.br
 APP_DEBUG=false
 
 ─────────────────────────────────────────────────────────────────────────────
@@ -166,7 +166,7 @@ CSRF_TOKEN_SALT=another_generated_secret_here_min_64_chars
 ─────────────────────────────────────────────────────────────────────────────
 # ADMIN ACCOUNT
 ─────────────────────────────────────────────────────────────────────────────
-ADMIN_EMAIL=admin@yourdomain.com
+ADMIN_EMAIL=admin@visionmetricsapp.com.br
 ADMIN_PASS=ChangeThisAfterFirstLogin123!
 
 ─────────────────────────────────────────────────────────────────────────────
@@ -196,9 +196,9 @@ MERCADOPAGO_WEBHOOK_TOKEN=your_webhook_secret_token
 # Email (use Hostinger SMTP)
 SMTP_HOST=smtp.hostinger.com
 SMTP_PORT=587
-SMTP_USER=noreply@yourdomain.com
+SMTP_USER=noreply@visionmetricsapp.com.br
 SMTP_PASS=your_email_password
-SMTP_FROM_EMAIL=noreply@yourdomain.com
+SMTP_FROM_EMAIL=noreply@visionmetricsapp.com.br
 
 ─────────────────────────────────────────────────────────────────────────────
 
@@ -207,7 +207,7 @@ SMTP_FROM_EMAIL=noreply@yourdomain.com
    
 4. ⚠️ IMPORTANT: Ensure .env is NOT accessible via web:
    - Should be blocked by .htaccess
-   - Test: https://yourdomain.com/.env should return 403 or 404
+   - Test: https://visionmetricsapp.com.br/.env should return 403 or 404
 
 ═══════════════════════════════════════════════════════════════════════════════
  6. DATABASE MIGRATION
@@ -303,7 +303,7 @@ A. WhatsApp Cloud API Webhook
 2. Select your app > WhatsApp > Configuration
 3. Webhook Configuration:
    
-   Callback URL: https://yourdomain.com/webhooks/whatsapp.php
+   Callback URL: https://visionmetricsapp.com.br/webhooks/whatsapp.php
    Verify Token: (same as WHATSAPP_VERIFY_TOKEN in .env)
    
 4. Subscribe to fields:
@@ -320,7 +320,7 @@ B. MercadoPago Webhook
 1. Go to: https://www.mercadopago.com.br/developers/panel/webhooks
 2. Add new webhook:
    
-   URL: https://yourdomain.com/mercadopago/webhook.php
+   URL: https://visionmetricsapp.com.br/mercadopago/webhook.php
    Events: ✓ Payments
    
 3. Save
@@ -347,7 +347,7 @@ B. MercadoPago Webhook
 
 Test:
 ───────────────────────────────────────────────────────────────────────────────
-Visit: https://yourdomain.com/backend/l.php?slug=test
+Visit: https://visionmetricsapp.com.br/backend/l.php?slug=test
 Wait 5-10 minutes for worker to process
 Check GA4 Realtime reports for events
 
@@ -380,14 +380,14 @@ Test Events:
 
 A. Application Access
 ───────────────────────────────────────────────────────────────────────────────
-✅ Homepage: https://yourdomain.com
-✅ Login: https://yourdomain.com/backend/login.php
-✅ Dashboard: https://yourdomain.com/backend/dashboard.php
+✅ Homepage: https://visionmetricsapp.com.br
+✅ Login: https://visionmetricsapp.com.br/backend/login.php
+✅ Dashboard: https://visionmetricsapp.com.br/backend/dashboard.php
 
 B. Redirect Handler Test
 ───────────────────────────────────────────────────────────────────────────────
 1. Create test link in admin panel
-2. Visit: https://yourdomain.com/backend/l.php?slug=YOUR_SLUG
+2. Visit: https://visionmetricsapp.com.br/backend/l.php?slug=YOUR_SLUG
 3. Check:
    ✅ Redirects correctly
    ✅ Cookie vm_first_touch is set (check browser dev tools)
