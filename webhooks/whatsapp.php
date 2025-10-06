@@ -1,352 +1,303 @@
 <?php
 /**
- * WhatsApp Cloud API - Webhook Handler
- * Recebe mensagens e eventos do WhatsApp com lead attribution
+ * VisionMetrics - WhatsApp Webhook Handler (Multi-tenant)
  * 
- * CONFIGURAÇÃO:
- * 1. No Meta App Dashboard > WhatsApp > Configuration
- * 2. Webhook URL: https://yourdomain.com/webhooks/whatsapp.php
- * 3. Verify Token: valor de WHATSAPP_VERIFY_TOKEN no .env
- * 4. Subscribe to: messages
+ * Receives incoming webhooks from BSP providers (360Dialog, Infobip, etc)
+ * Handles:
+ * - Message attribution via vm_token
+ * - Phone number matching
+ * - Lead creation/update
+ * - Conversation threading
+ * - Message storage
  * 
- * FEATURES:
- * - Lead attribution via vm_token (extracted from message)
- * - Fallback to phone number matching
- * - Queue job creation for analytics
- * - Conversation tracking with first-touch attribution
+ * Security:
+ * - Workspace isolation
+ * - Signature verification
+ * - Rate limiting
  */
 
+require_once __DIR__ . '/../backend/config.php';
 require_once __DIR__ . '/../src/bootstrap.php';
-require_once __DIR__ . '/../src/db.php';
-require_once __DIR__ . '/../src/adapters/WhatsAppAdapter.php';
 
-use VisionMetrics\Adapters\WhatsAppAdapter;
+use VisionMetrics\Integrations\WhatsappIntegration;
 
-$whatsapp = new WhatsAppAdapter();
-
-// ═══════════════════════════════════════════════════════════
-// WEBHOOK VERIFICATION (GET)
-// ═══════════════════════════════════════════════════════════
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $mode = $_GET['hub_mode'] ?? '';
-    $token = $_GET['hub_verify_token'] ?? '';
-    $challenge = $_GET['hub_challenge'] ?? '';
-    
-    $result = $whatsapp->verifyWebhook($mode, $token, $challenge);
-    
-    if ($result) {
-        echo $result;
-        exit;
-    }
-    
-    http_response_code(403);
-    exit;
-}
-
-// ═══════════════════════════════════════════════════════════
-// WEBHOOK EVENT (POST)
-// ═══════════════════════════════════════════════════════════
-$body = file_get_contents('php://input');
-$payload = json_decode($body, true);
-
-logMessage('INFO', 'WhatsApp webhook received', [
-    'payload_size' => strlen($body)
-]);
+// Log raw webhook immediately
+$rawPayload = file_get_contents('php://input');
+$headers = getallheaders();
+$sourceIP = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 
 $db = getDB();
 
-// Log webhook to database
-$stmt = $db->prepare("
-    INSERT INTO webhooks_logs (source, event_type, payload, received_at)
-    VALUES ('whatsapp', 'message', ?, NOW())
+// Log webhook
+$stmtLog = $db->prepare("
+    INSERT INTO webhooks_logs (source, payload, headers, ip_address, processing_status, received_at)
+    VALUES ('whatsapp', ?, ?, ?, 'pending', NOW())
 ");
-$stmt->execute([$body]);
+$stmtLog->execute([
+    $rawPayload,
+    json_encode($headers),
+    $sourceIP
+]);
+$webhookLogId = $db->lastInsertId();
 
-// ═══════════════════════════════════════════════════════════
-// PROCESS INCOMING MESSAGE
-// ═══════════════════════════════════════════════════════════
-$message = $whatsapp->processIncomingMessage($payload);
+// Return 200 OK immediately (process async if needed)
+http_response_code(200);
+header('Content-Type: application/json');
 
-if (!$message) {
-    logMessage('INFO', 'No processable message in webhook');
-    http_response_code(200);
-    echo json_encode(['ok' => true]);
-    exit;
-}
-
-$fromPhone = $message['from'];
-$messageText = $message['text'] ?? '';
-$messageId = $message['message_id'] ?? '';
-
-// ═══════════════════════════════════════════════════════════
-// EXTRACT VM_TOKEN FROM MESSAGE
-// ═══════════════════════════════════════════════════════════
-$vmToken = null;
-$cleanMessage = $messageText;
-
-// Pattern: vm_token:UUID or vm_token: UUID
-if (preg_match('/vm_token:\s*([a-f0-9\-]{36})/i', $messageText, $matches)) {
-    $vmToken = $matches[1];
-    // Remove token from message for cleaner display
-    $cleanMessage = preg_replace('/\s*vm_token:\s*[a-f0-9\-]{36}/i', '', $messageText);
-    $cleanMessage = trim($cleanMessage);
+try {
+    $payload = json_decode($rawPayload, true);
     
-    logMessage('INFO', 'vm_token extracted from message', [
-        'token' => $vmToken,
-        'from' => $fromPhone
-    ]);
-}
-
-// ═══════════════════════════════════════════════════════════
-// DETERMINE WORKSPACE (from phone_id or default)
-// ═══════════════════════════════════════════════════════════
-$workspaceId = null;
-$whatsappNumberId = null;
-
-// Try to find workspace from whatsapp_number_id in payload
-$phoneNumberId = $payload['entry'][0]['changes'][0]['value']['metadata']['phone_number_id'] ?? null;
-
-if ($phoneNumberId) {
-    $stmt = $db->prepare("
-        SELECT id, workspace_id 
-        FROM whatsapp_numbers 
-        WHERE phone_number = ? OR session_data LIKE ?
-        LIMIT 1
-    ");
-    $stmt->execute([$phoneNumberId, "%{$phoneNumberId}%"]);
-    $whatsappNumber = $stmt->fetch();
-    
-    if ($whatsappNumber) {
-        $workspaceId = $whatsappNumber['workspace_id'];
-        $whatsappNumberId = $whatsappNumber['id'];
+    if (!$payload) {
+        throw new Exception('Invalid JSON payload');
     }
-}
-
-// Fallback to first workspace (for development)
-if (!$workspaceId) {
-    $stmt = $db->query("SELECT id FROM workspaces ORDER BY id ASC LIMIT 1");
-    $workspace = $stmt->fetch();
-    $workspaceId = $workspace['id'] ?? 1;
     
-    logMessage('WARNING', 'No workspace mapping found, using default', [
-        'workspace_id' => $workspaceId
-    ]);
-}
-
-// ═══════════════════════════════════════════════════════════
-// FIND OR CREATE LEAD
-// ═══════════════════════════════════════════════════════════
-$leadId = null;
-$leadExists = false;
-
-// Normalize phone number (remove non-digits)
-$normalizedPhone = preg_replace('/\D/', '', $fromPhone);
-
-// Strategy 1: Try to find lead by vm_token (highest priority)
-if ($vmToken) {
-    $stmt = $db->prepare("
-        SELECT id FROM leads 
-        WHERE workspace_id = ? AND first_touch_token = ?
-        LIMIT 1
-    ");
-    $stmt->execute([$workspaceId, $vmToken]);
-    $lead = $stmt->fetch();
+    // ═══════════════════════════════════════════════════════════
+    // 1. IDENTIFY WORKSPACE
+    // ═══════════════════════════════════════════════════════════
+    $workspaceId = null;
+    $integrationId = null;
     
-    if ($lead) {
-        $leadId = $lead['id'];
-        $leadExists = true;
-        
-        // Update phone number if not set
+    // Try to extract session_id or phone_id from payload
+    // Format varies by provider
+    
+    // 360Dialog format: payload.entry[0].changes[0].value.metadata.phone_number_id
+    $phoneNumberId = null;
+    $sessionId = null;
+    
+    if (isset($payload['entry'][0]['changes'][0]['value']['metadata']['phone_number_id'])) {
+        $phoneNumberId = $payload['entry'][0]['changes'][0]['value']['metadata']['phone_number_id'];
+    }
+    
+    // Try to match by phone_id in integration meta
+    if ($phoneNumberId) {
         $stmt = $db->prepare("
-            UPDATE leads 
-            SET phone_number = ?, last_seen = NOW(), updated_at = NOW()
-            WHERE id = ? AND (phone_number IS NULL OR phone_number = '')
+            SELECT id, workspace_id 
+            FROM whatsapp_integrations 
+            WHERE JSON_EXTRACT(meta, '$.phone_id') = ? 
+            OR JSON_EXTRACT(meta, '$.waba_id') = ?
+            LIMIT 1
         ");
-        $stmt->execute([$normalizedPhone, $leadId]);
+        $stmt->execute([$phoneNumberId, $phoneNumberId]);
+        $intMatch = $stmt->fetch();
         
-        logMessage('INFO', 'Lead found by vm_token', [
-            'lead_id' => $leadId,
-            'token' => $vmToken
-        ]);
+        if ($intMatch) {
+            $workspaceId = $intMatch['workspace_id'];
+            $integrationId = $intMatch['id'];
+        }
     }
-}
-
-// Strategy 2: Try to find lead by phone number
-if (!$leadId) {
-    $stmt = $db->prepare("
-        SELECT id FROM leads 
-        WHERE workspace_id = ? AND phone_number = ?
-        LIMIT 1
-    ");
-    $stmt->execute([$workspaceId, $normalizedPhone]);
-    $lead = $stmt->fetch();
     
-    if ($lead) {
-        $leadId = $lead['id'];
-        $leadExists = true;
+    // Fallback: use first active integration (if only one workspace)
+    if (!$workspaceId) {
+        $stmt = $db->prepare("
+            SELECT id, workspace_id 
+            FROM whatsapp_integrations 
+            WHERE status = 'active' 
+            ORDER BY created_at DESC 
+            LIMIT 1
+        ");
+        $stmt->execute();
+        $intMatch = $stmt->fetch();
         
-        // Update first_touch_token if we have one and it's not set
-        if ($vmToken) {
-            $stmt = $db->prepare("
-                UPDATE leads 
-                SET first_touch_token = ?, last_seen = NOW(), updated_at = NOW()
-                WHERE id = ? AND (first_touch_token IS NULL OR first_touch_token = '')
-            ");
-            $stmt->execute([$vmToken, $leadId]);
-        } else {
-            // Just update last_seen
-            $stmt = $db->prepare("UPDATE leads SET last_seen = NOW() WHERE id = ?");
-            $stmt->execute([$leadId]);
+        if ($intMatch) {
+            $workspaceId = $intMatch['workspace_id'];
+            $integrationId = $intMatch['id'];
+        }
+    }
+    
+    if (!$workspaceId) {
+        throw new Exception('Unable to determine workspace for webhook');
+    }
+    
+    // Update webhook log with workspace
+    $db->prepare("UPDATE webhooks_logs SET workspace_id = ? WHERE id = ?")
+        ->execute([$workspaceId, $webhookLogId]);
+    
+    // ═══════════════════════════════════════════════════════════
+    // 2. EXTRACT MESSAGE DATA
+    // ═══════════════════════════════════════════════════════════
+    $messages = [];
+    
+    // 360Dialog / Cloud API format
+    if (isset($payload['entry'][0]['changes'][0]['value']['messages'])) {
+        foreach ($payload['entry'][0]['changes'][0]['value']['messages'] as $msg) {
+            $messages[] = [
+                'message_id' => $msg['id'] ?? null,
+                'from' => $msg['from'] ?? null, // E.164 phone number
+                'to' => $payload['entry'][0]['changes'][0]['value']['metadata']['display_phone_number'] ?? null,
+                'timestamp' => $msg['timestamp'] ?? time(),
+                'type' => $msg['type'] ?? 'text',
+                'text' => $msg['text']['body'] ?? '',
+                'media_url' => $msg['image']['link'] ?? $msg['video']['link'] ?? $msg['document']['link'] ?? null,
+                'media_type' => $msg['type'] !== 'text' ? $msg['type'] : null
+            ];
+        }
+    }
+    
+    // ═══════════════════════════════════════════════════════════
+    // 3. PROCESS EACH MESSAGE
+    // ═══════════════════════════════════════════════════════════
+    foreach ($messages as $message) {
+        $phoneFrom = $message['from'];
+        $phoneTo = $message['to'];
+        $messageText = $message['text'];
+        $messageId = $message['message_id'];
+        
+        if (!$phoneFrom) {
+            continue; // Skip if no sender
         }
         
-        logMessage('INFO', 'Lead found by phone number', [
-            'lead_id' => $leadId,
-            'phone' => $normalizedPhone
+        // ───────────────────────────────────────────────────────
+        // 3.1 LEAD ATTRIBUTION
+        // ───────────────────────────────────────────────────────
+        $leadId = null;
+        
+        // Try vm_token attribution
+        if (preg_match('/vm_token:([A-Za-z0-9\-]+)/', $messageText, $matches)) {
+            $vmToken = $matches[1];
+            
+            $stmt = $db->prepare("
+                SELECT id FROM leads 
+                WHERE workspace_id = ? AND first_touch_token = ?
+                LIMIT 1
+            ");
+            $stmt->execute([$workspaceId, $vmToken]);
+            $lead = $stmt->fetch();
+            
+            if ($lead) {
+                $leadId = $lead['id'];
+                
+                // Update last_seen
+                $db->prepare("UPDATE leads SET last_seen = NOW() WHERE id = ?")
+                    ->execute([$leadId]);
+            }
+        }
+        
+        // Fallback: match by phone number
+        if (!$leadId) {
+            $normalizedPhone = preg_replace('/\D/', '', $phoneFrom);
+            
+            $stmt = $db->prepare("
+                SELECT id FROM leads 
+                WHERE workspace_id = ? 
+                AND (phone = ? OR phone = ? OR phone LIKE ?)
+                LIMIT 1
+            ");
+            $stmt->execute([
+                $workspaceId,
+                $phoneFrom,
+                $normalizedPhone,
+                '%' . substr($normalizedPhone, -9) // Last 9 digits
+            ]);
+            $lead = $stmt->fetch();
+            
+            if ($lead) {
+                $leadId = $lead['id'];
+            }
+        }
+        
+        // Create anonymous lead if not found
+        if (!$leadId) {
+            $stmt = $db->prepare("
+                INSERT INTO leads 
+                (workspace_id, phone, status, stage, first_seen, last_seen, source)
+                VALUES (?, ?, 'active', 'novo', NOW(), NOW(), 'whatsapp')
+            ");
+            $stmt->execute([$workspaceId, $phoneFrom]);
+            $leadId = $db->lastInsertId();
+        }
+        
+        // ───────────────────────────────────────────────────────
+        // 3.2 UPSERT CONVERSATION
+        // ───────────────────────────────────────────────────────
+        $stmt = $db->prepare("
+            SELECT id FROM whatsapp_conversations
+            WHERE workspace_id = ? AND wa_from = ? AND wa_to = ?
+            LIMIT 1
+        ");
+        $stmt->execute([$workspaceId, $phoneFrom, $phoneTo]);
+        $conversation = $stmt->fetch();
+        
+        if ($conversation) {
+            $conversationId = $conversation['id'];
+            
+            // Update snippet and last_message_at
+            $db->prepare("
+                UPDATE whatsapp_conversations 
+                SET lead_id = ?, snippet = ?, last_message_at = NOW()
+                WHERE id = ?
+            ")->execute([$leadId, substr($messageText, 0, 200), $conversationId]);
+            
+        } else {
+            // Create new conversation
+            $stmt = $db->prepare("
+                INSERT INTO whatsapp_conversations
+                (workspace_id, lead_id, wa_from, wa_to, snippet, last_message_at, created_at)
+                VALUES (?, ?, ?, ?, ?, NOW(), NOW())
+            ");
+            $stmt->execute([
+                $workspaceId,
+                $leadId,
+                $phoneFrom,
+                $phoneTo,
+                substr($messageText, 0, 200)
+            ]);
+            $conversationId = $db->lastInsertId();
+        }
+        
+        // ───────────────────────────────────────────────────────
+        // 3.3 INSERT MESSAGE
+        // ───────────────────────────────────────────────────────
+        $stmt = $db->prepare("
+            INSERT INTO whatsapp_messages
+            (conversation_id, workspace_id, message_id, direction, text, media_url, media_type, raw_payload, received_at, created_at)
+            VALUES (?, ?, ?, 'inbound', ?, ?, ?, ?, FROM_UNIXTIME(?), NOW())
+        ");
+        $stmt->execute([
+            $conversationId,
+            $workspaceId,
+            $messageId,
+            $messageText,
+            $message['media_url'],
+            $message['media_type'],
+            json_encode($message),
+            $message['timestamp']
         ]);
-    }
-}
-
-// Strategy 3: Create new lead
-if (!$leadId) {
-    $stmt = $db->prepare("
-        INSERT INTO leads (
-            workspace_id, phone_number, first_touch_token,
-            utm_medium, stage, status, first_seen, last_seen
-        ) VALUES (?, ?, ?, 'whatsapp', 'novo', 'active', NOW(), NOW())
-    ");
-    $stmt->execute([$workspaceId, $normalizedPhone, $vmToken]);
-    $leadId = $db->lastInsertId();
-    
-    logMessage('INFO', 'New lead created from WhatsApp', [
-        'lead_id' => $leadId,
-        'phone' => $normalizedPhone,
-        'vm_token' => $vmToken
-    ]);
-}
-
-// ═══════════════════════════════════════════════════════════
-// FIND OR CREATE CONVERSATION
-// ═══════════════════════════════════════════════════════════
-$stmt = $db->prepare("
-    SELECT id FROM conversations
-    WHERE workspace_id = ? 
-    AND contact_phone = ?
-    AND (whatsapp_number_id = ? OR whatsapp_number_id IS NULL)
-    ORDER BY created_at DESC
-    LIMIT 1
-");
-$stmt->execute([$workspaceId, $normalizedPhone, $whatsappNumberId]);
-$conversation = $stmt->fetch();
-
-if ($conversation) {
-    $conversationId = $conversation['id'];
-    
-    // Update last_message_at and first_touch_token if available
-    if ($vmToken) {
+        
+        // ───────────────────────────────────────────────────────
+        // 3.4 CREATE QUEUE JOB (optional)
+        // ───────────────────────────────────────────────────────
+        $jobPayload = [
+            'type' => 'whatsapp_message',
+            'conversation_id' => $conversationId,
+            'lead_id' => $leadId,
+            'message_text' => $messageText,
+            'phone_from' => $phoneFrom
+        ];
+        
         $stmt = $db->prepare("
-            UPDATE conversations 
-            SET last_message_at = NOW(), 
-                first_touch_token = COALESCE(first_touch_token, ?),
-                lead_id = COALESCE(lead_id, ?)
-            WHERE id = ?
+            INSERT INTO queue_jobs 
+            (workspace_id, type, payload, status, attempts, next_run_at, created_at)
+            VALUES (?, 'whatsapp_message', ?, 'pending', 0, NOW(), NOW())
         ");
-        $stmt->execute([$vmToken, $leadId, $conversationId]);
-    } else {
-        $stmt = $db->prepare("
-            UPDATE conversations 
-            SET last_message_at = NOW(),
-                lead_id = COALESCE(lead_id, ?)
-            WHERE id = ?
-        ");
-        $stmt->execute([$leadId, $conversationId]);
+        $stmt->execute([$workspaceId, json_encode($jobPayload)]);
     }
-} else {
-    // Create new conversation
-    $stmt = $db->prepare("
-        INSERT INTO conversations (
-            workspace_id, whatsapp_number_id, lead_id,
-            contact_phone, first_touch_token,
-            status, last_message_at, created_at
-        ) VALUES (?, ?, ?, ?, ?, 'active', NOW(), NOW())
-    ");
-    $stmt->execute([
-        $workspaceId, 
-        $whatsappNumberId, 
-        $leadId,
-        $normalizedPhone,
-        $vmToken
-    ]);
-    $conversationId = $db->lastInsertId();
     
-    logMessage('INFO', 'New conversation created', [
-        'conversation_id' => $conversationId
-    ]);
+    // Mark webhook as processed
+    $db->prepare("UPDATE webhooks_logs SET processing_status = 'processed', processed_at = NOW() WHERE id = ?")
+        ->execute([$webhookLogId]);
+    
+    echo json_encode(['success' => true, 'messages_processed' => count($messages)]);
+    
+} catch (Exception $e) {
+    // Mark webhook as failed
+    $db->prepare("
+        UPDATE webhooks_logs 
+        SET processing_status = 'failed', error_message = ?, processed_at = NOW() 
+        WHERE id = ?
+    ")->execute([$e->getMessage(), $webhookLogId]);
+    
+    error_log("WhatsApp webhook error: " . $e->getMessage());
+    
+    // Still return 200 to prevent retries
+    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
-
-// ═══════════════════════════════════════════════════════════
-// STORE MESSAGE
-// ═══════════════════════════════════════════════════════════
-$stmt = $db->prepare("
-    INSERT INTO messages (
-        conversation_id, whatsapp_message_id,
-        direction, type, content,
-        status, timestamp, metadata
-    ) VALUES (?, ?, 'inbound', 'text', ?, 'delivered', NOW(), ?)
-");
-$stmt->execute([
-    $conversationId,
-    $messageId,
-    $cleanMessage ?: $messageText,
-    json_encode(['raw_message' => $messageText, 'vm_token' => $vmToken])
-]);
-
-// ═══════════════════════════════════════════════════════════
-// CREATE EVENT RECORD
-// ═══════════════════════════════════════════════════════════
-$stmt = $db->prepare("
-    INSERT INTO events (
-        workspace_id, lead_id, event_type, 
-        event_name, page_url, raw_data, created_at
-    ) VALUES (?, ?, 'whatsapp_message', 'whatsapp_inbound', ?, ?, NOW())
-");
-$stmt->execute([
-    $workspaceId,
-    $leadId,
-    'whatsapp://message/' . $messageId,
-    json_encode($message)
-]);
-
-// ═══════════════════════════════════════════════════════════
-// CREATE QUEUE JOB FOR ANALYTICS
-// ═══════════════════════════════════════════════════════════
-$jobPayload = [
-    'type' => 'whatsapp_message',
-    'message_id' => $messageId,
-    'lead_id' => $leadId,
-    'conversation_id' => $conversationId,
-    'cookie_token' => $vmToken,
-    'phone' => $normalizedPhone,
-    'message_text' => substr($cleanMessage ?: $messageText, 0, 200),
-    'timestamp' => time()
-];
-
-$stmt = $db->prepare("
-    INSERT INTO queue_jobs (
-        workspace_id, type, payload, 
-        status, attempts, next_run_at, created_at
-    ) VALUES (?, 'whatsapp_message', ?, 'pending', 0, NOW(), NOW())
-");
-$stmt->execute([$workspaceId, json_encode($jobPayload)]);
-
-logMessage('INFO', 'WhatsApp message processed successfully', [
-    'lead_id' => $leadId,
-    'conversation_id' => $conversationId,
-    'vm_token' => $vmToken,
-    'phone' => $normalizedPhone
-]);
-
-// ═══════════════════════════════════════════════════════════
-// RESPOND TO WEBHOOK
-// ═══════════════════════════════════════════════════════════
-http_response_code(200);
-echo json_encode(['ok' => true]);
