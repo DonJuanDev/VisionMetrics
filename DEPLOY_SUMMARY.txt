@@ -1,0 +1,547 @@
+═══════════════════════════════════════════════════════════════════════════════
+ VISIONMETRICS - HOSTINGER DEPLOYMENT GUIDE
+═══════════════════════════════════════════════════════════════════════════════
+
+This document contains step-by-step instructions for deploying VisionMetrics to 
+Hostinger hosting (cPanel or SSH access).
+
+Date: 2025-10-06
+Branch: feature/hostinger-prod
+
+═══════════════════════════════════════════════════════════════════════════════
+ 1. PRE-REQUISITES
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ Hostinger account with:
+   - PHP 7.4+ or PHP 8.0+ (recommended: 8.1)
+   - MySQL 5.7+ or MariaDB 10.3+
+   - SSH access (recommended) or cPanel File Manager
+   - CRON jobs capability
+   - Composer installed (or ability to run composer locally)
+
+✅ External accounts needed:
+   - Google Analytics 4 (GA4) property
+   - Meta for Developers account (Facebook/Instagram)
+   - WhatsApp Cloud API (via Meta)
+   - MercadoPago account (for payments)
+
+✅ Local tools (optional but recommended):
+   - FileZilla or similar FTP/SFTP client
+   - SSH client (PuTTY on Windows, built-in on Mac/Linux)
+   - Git client
+
+═══════════════════════════════════════════════════════════════════════════════
+ 2. HOSTINGER SETUP
+═══════════════════════════════════════════════════════════════════════════════
+
+A. PHP Configuration
+───────────────────────────────────────────────────────────────────────────────
+1. Login to Hostinger hPanel
+2. Go to: Advanced > PHP Configuration
+3. Ensure these extensions are enabled:
+   ✓ PDO
+   ✓ pdo_mysql
+   ✓ mysqli
+   ✓ curl
+   ✓ json
+   ✓ mbstring
+   ✓ openssl
+   ✓ zip (optional, for composer)
+   ✓ gd or imagick (optional, for QR codes)
+
+4. Set PHP memory limit: 256M minimum
+5. Set max_execution_time: 300 seconds
+6. Save changes
+
+B. Database Creation
+───────────────────────────────────────────────────────────────────────────────
+1. Go to: Databases > MySQL Databases
+2. Create new database:
+   Database name: (note this, e.g., u123456789_visionmetrics)
+   
+3. Create database user:
+   Username: (note this, e.g., u123456789_vmuser)
+   Password: (generate strong password, note this)
+   
+4. Add user to database with ALL PRIVILEGES
+5. Note these credentials for later:
+   - Database Host: localhost
+   - Database Name: ____________________
+   - Database User: ____________________
+   - Database Pass: ____________________
+
+═══════════════════════════════════════════════════════════════════════════════
+ 3. FILE UPLOAD
+═══════════════════════════════════════════════════════════════════════════════
+
+Method A: Via SSH (Recommended)
+───────────────────────────────────────────────────────────────────────────────
+1. SSH into your Hostinger account:
+   ssh u123456789@yourdomain.com
+
+2. Navigate to public_html (or domains/yourdomain.com):
+   cd public_html
+
+3. Clone repository (if you have Git access):
+   git clone YOUR_REPO_URL .
+   git checkout feature/hostinger-prod
+   
+   OR upload files via SFTP (see Method B)
+
+4. Set proper permissions:
+   chmod -R 755 .
+   chmod -R 775 logs/
+   chmod -R 775 uploads/
+   chmod +x scripts/worker.php
+   chmod +x scripts/create_admin.php
+
+Method B: Via FileZilla/FTP
+───────────────────────────────────────────────────────────────────────────────
+1. Get FTP credentials from Hostinger hPanel > Files > FTP Accounts
+2. Connect via FileZilla:
+   Host: ftp.yourdomain.com
+   Username: your_ftp_user
+   Password: your_ftp_password
+   Port: 21 (or 22 for SFTP)
+
+3. Upload all project files to public_html/ directory
+   (Ensure hidden files like .htaccess are uploaded)
+
+4. Via SSH or File Manager, set permissions:
+   - logs/ directory: 775
+   - uploads/ directory: 775
+   - scripts/*.php: executable (755)
+
+═══════════════════════════════════════════════════════════════════════════════
+ 4. COMPOSER DEPENDENCIES
+═══════════════════════════════════════════════════════════════════════════════
+
+Option A: Via SSH
+───────────────────────────────────────────────────────────────────────────────
+cd /home/u123456789/public_html
+composer install --no-dev --optimize-autoloader
+
+Option B: Local Install + Upload
+───────────────────────────────────────────────────────────────────────────────
+1. On your local machine:
+   composer install --no-dev --optimize-autoloader
+
+2. Upload the entire vendor/ directory via FTP
+
+═══════════════════════════════════════════════════════════════════════════════
+ 5. ENVIRONMENT CONFIGURATION
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Copy env.example to .env:
+   cp env.example .env
+
+2. Edit .env file with your actual values:
+
+─────────────────────────────────────────────────────────────────────────────
+# APPLICATION
+─────────────────────────────────────────────────────────────────────────────
+APP_NAME=VisionMetrics
+APP_ENV=production
+APP_URL=https://yourdomain.com
+APP_DEBUG=false
+
+─────────────────────────────────────────────────────────────────────────────
+# DATABASE (use values from step 2.B)
+─────────────────────────────────────────────────────────────────────────────
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=u123456789_visionmetrics
+DB_USER=u123456789_vmuser
+DB_PASS=your_strong_database_password
+
+─────────────────────────────────────────────────────────────────────────────
+# SECURITY (generate new secrets)
+─────────────────────────────────────────────────────────────────────────────
+To generate secrets via SSH:
+php -r "echo bin2hex(random_bytes(32));"
+
+JWT_SECRET=your_generated_secret_here_min_64_chars
+CSRF_TOKEN_SALT=another_generated_secret_here_min_64_chars
+
+─────────────────────────────────────────────────────────────────────────────
+# ADMIN ACCOUNT
+─────────────────────────────────────────────────────────────────────────────
+ADMIN_EMAIL=admin@yourdomain.com
+ADMIN_PASS=ChangeThisAfterFirstLogin123!
+
+─────────────────────────────────────────────────────────────────────────────
+# INTEGRATIONS
+─────────────────────────────────────────────────────────────────────────────
+ADAPTER_MODE=live  (change from 'simulate' to 'live' for production)
+
+# Google Analytics 4
+GA4_MEASUREMENT_ID=G-XXXXXXXXXX
+GA4_API_SECRET=your_ga4_api_secret
+
+# Meta/Facebook Ads
+META_PIXEL_ID=1234567890123456
+META_ACCESS_TOKEN=EAAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+META_TEST_EVENT_CODE=TEST12345  (optional, for testing)
+
+# WhatsApp Cloud API
+WHATSAPP_VERIFY_TOKEN=your_random_verify_token_here
+WHATSAPP_PHONE_NUMBER_ID=1234567890123456
+WHATSAPP_ACCESS_TOKEN=EAAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# MercadoPago
+MERCADOPAGO_ACCESS_TOKEN=APP_USR-1234567890123456-123456-abcdef1234567890
+MERCADOPAGO_PUBLIC_KEY=APP_USR-abcdef12-3456-7890-abcd-ef1234567890
+MERCADOPAGO_WEBHOOK_TOKEN=your_webhook_secret_token
+
+# Email (use Hostinger SMTP)
+SMTP_HOST=smtp.hostinger.com
+SMTP_PORT=587
+SMTP_USER=noreply@yourdomain.com
+SMTP_PASS=your_email_password
+SMTP_FROM_EMAIL=noreply@yourdomain.com
+
+─────────────────────────────────────────────────────────────────────────────
+
+3. Save and secure .env:
+   chmod 600 .env
+   
+4. ⚠️ IMPORTANT: Ensure .env is NOT accessible via web:
+   - Should be blocked by .htaccess
+   - Test: https://yourdomain.com/.env should return 403 or 404
+
+═══════════════════════════════════════════════════════════════════════════════
+ 6. DATABASE MIGRATION
+═══════════════════════════════════════════════════════════════════════════════
+
+Via SSH:
+───────────────────────────────────────────────────────────────────────────────
+cd /home/u123456789/public_html
+
+# 1. Import base schema
+mysql -u DB_USER -p DB_NAME < sql/schema.sql
+
+# 2. Run migrations in order
+mysql -u DB_USER -p DB_NAME < sql/migrations/add_missing_tables.sql
+mysql -u DB_USER -p DB_NAME < sql/migrations/fix_trackable_links_and_sales.sql
+mysql -u DB_USER -p DB_NAME < sql/migrations/20251006_hostinger_prod_tables.sql
+
+# 3. Optional: Seed data (if applicable)
+mysql -u DB_USER -p DB_NAME < sql/seed.sql
+
+Via phpMyAdmin (Hostinger hPanel):
+───────────────────────────────────────────────────────────────────────────────
+1. Go to: Databases > phpMyAdmin
+2. Select your database
+3. Go to SQL tab
+4. Copy and paste contents of each file in order:
+   - sql/schema.sql
+   - sql/migrations/add_missing_tables.sql
+   - sql/migrations/fix_trackable_links_and_sales.sql
+   - sql/migrations/20251006_hostinger_prod_tables.sql
+5. Click "Go" after each file
+
+═══════════════════════════════════════════════════════════════════════════════
+ 7. CREATE ADMIN ACCOUNT
+═══════════════════════════════════════════════════════════════════════════════
+
+Via SSH:
+───────────────────────────────────────────────────────────────────────────────
+cd /home/u123456789/public_html
+php scripts/create_admin.php
+
+This will create an admin account using ADMIN_EMAIL and ADMIN_PASS from .env
+
+Note the output:
+- User ID
+- Workspace ID
+- Login URL
+
+═══════════════════════════════════════════════════════════════════════════════
+ 8. CRON JOB SETUP (CRITICAL)
+═══════════════════════════════════════════════════════════════════════════════
+
+The worker script processes queue jobs (analytics events, conversions, etc.)
+
+Via Hostinger hPanel:
+───────────────────────────────────────────────────────────────────────────────
+1. Go to: Advanced > Cron Jobs
+2. Add new cron job:
+
+   Minute: */5  (or * for every minute for faster processing)
+   Hour: *
+   Day: *
+   Month: *
+   Weekday: *
+   
+   Command:
+   cd /home/u123456789/public_html && /usr/bin/php scripts/worker.php >> logs/worker.log 2>&1
+   
+   (Replace /home/u123456789/public_html with your actual path)
+   (Replace /usr/bin/php with output of: which php)
+
+3. Save cron job
+
+4. Test manually via SSH:
+   php scripts/worker.php
+   
+   Check logs:
+   tail -f logs/worker.log
+
+Recommended Schedule:
+───────────────────────────────────────────────────────────────────────────────
+- High traffic: Every 1 minute (*)
+- Medium traffic: Every 5 minutes (*/5)
+- Low traffic: Every 15 minutes (*/15)
+
+═══════════════════════════════════════════════════════════════════════════════
+ 9. WEBHOOK CONFIGURATION
+═══════════════════════════════════════════════════════════════════════════════
+
+A. WhatsApp Cloud API Webhook
+───────────────────────────────────────────────────────────────────────────────
+1. Go to: https://developers.facebook.com/apps
+2. Select your app > WhatsApp > Configuration
+3. Webhook Configuration:
+   
+   Callback URL: https://yourdomain.com/webhooks/whatsapp.php
+   Verify Token: (same as WHATSAPP_VERIFY_TOKEN in .env)
+   
+4. Subscribe to fields:
+   ✓ messages
+   
+5. Save and Verify
+
+6. Test webhook:
+   Send a test message to your WhatsApp number
+   Check: tail -f logs/app.log
+
+B. MercadoPago Webhook
+───────────────────────────────────────────────────────────────────────────────
+1. Go to: https://www.mercadopago.com.br/developers/panel/webhooks
+2. Add new webhook:
+   
+   URL: https://yourdomain.com/mercadopago/webhook.php
+   Events: ✓ Payments
+   
+3. Save
+
+4. Test with sandbox payment:
+   Use test cards from MercadoPago documentation
+   
+5. Check webhook logs:
+   SELECT * FROM webhooks_logs WHERE source = 'mercadopago' ORDER BY received_at DESC LIMIT 10;
+
+═══════════════════════════════════════════════════════════════════════════════
+ 10. GOOGLE ANALYTICS 4 SETUP
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Go to: https://analytics.google.com
+2. Create GA4 property (if not exists)
+3. Go to: Admin > Data Streams > [Your stream]
+4. Copy Measurement ID (G-XXXXXXXXXX)
+5. Go to: Admin > Data Streams > Measurement Protocol API secrets
+6. Create new secret, copy API secret
+7. Add to .env:
+   GA4_MEASUREMENT_ID=G-XXXXXXXXXX
+   GA4_API_SECRET=your_api_secret
+
+Test:
+───────────────────────────────────────────────────────────────────────────────
+Visit: https://yourdomain.com/backend/l.php?slug=test
+Wait 5-10 minutes for worker to process
+Check GA4 Realtime reports for events
+
+═══════════════════════════════════════════════════════════════════════════════
+ 11. META ADS SETUP (CONVERSIONS API)
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Go to: https://developers.facebook.com/apps
+2. Create app or select existing
+3. Add "Conversions API" product
+4. Get credentials:
+   - Pixel ID: Events Manager > Data Sources > Pixel
+   - Access Token: Events Manager > Settings > Conversions API > Generate Access Token
+   
+5. Add to .env:
+   META_PIXEL_ID=1234567890123456
+   META_ACCESS_TOKEN=EAAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+Test Events:
+───────────────────────────────────────────────────────────────────────────────
+1. Enable Test Events in Events Manager
+2. Get Test Event Code
+3. Add to .env: META_TEST_EVENT_CODE=TEST12345
+4. Trigger event (click on tracked link)
+5. Check Test Events in Meta Events Manager
+
+═══════════════════════════════════════════════════════════════════════════════
+ 12. VERIFICATION & TESTING
+═══════════════════════════════════════════════════════════════════════════════
+
+A. Application Access
+───────────────────────────────────────────────────────────────────────────────
+✅ Homepage: https://yourdomain.com
+✅ Login: https://yourdomain.com/backend/login.php
+✅ Dashboard: https://yourdomain.com/backend/dashboard.php
+
+B. Redirect Handler Test
+───────────────────────────────────────────────────────────────────────────────
+1. Create test link in admin panel
+2. Visit: https://yourdomain.com/backend/l.php?slug=YOUR_SLUG
+3. Check:
+   ✅ Redirects correctly
+   ✅ Cookie vm_first_touch is set (check browser dev tools)
+   ✅ Click recorded in link_clicks table
+   ✅ Queue job created in queue_jobs table
+
+C. Worker Processing Test
+───────────────────────────────────────────────────────────────────────────────
+# Run worker manually
+php scripts/worker.php
+
+# Check output for:
+✅ Jobs fetched
+✅ GA4 adapter called
+✅ Meta adapter called
+✅ Jobs marked as completed
+
+# Check logs
+tail -f logs/worker.log
+
+D. WhatsApp Integration Test
+───────────────────────────────────────────────────────────────────────────────
+1. Click WhatsApp link with vm_token
+2. Send message including the vm_token
+3. Check:
+   ✅ Lead associated with token
+   ✅ Conversation created
+   ✅ Message stored
+   ✅ Queue job created
+
+E. MercadoPago Payment Test
+───────────────────────────────────────────────────────────────────────────────
+1. Create test subscription
+2. Complete payment (sandbox)
+3. Check:
+   ✅ Webhook received (webhooks_logs)
+   ✅ Subscription updated to 'active'
+   ✅ Conversion record created
+   ✅ Queue job for analytics created
+
+═══════════════════════════════════════════════════════════════════════════════
+ 13. SECURITY CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ .env file is chmod 600 and not web-accessible
+✅ .htaccess is properly configured to block sensitive files
+✅ APP_DEBUG=false in production
+✅ Strong passwords for database and admin account
+✅ SSL certificate installed (Let's Encrypt via Hostinger)
+✅ Change ADMIN_PASS after first login
+✅ Remove sensitive data from repository
+✅ Enable CSRF protection (already implemented)
+✅ Rate limiting enabled (already implemented)
+✅ SQL injection protection via prepared statements (already implemented)
+
+═══════════════════════════════════════════════════════════════════════════════
+ 14. TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════════════════
+
+Issue: Database connection error
+───────────────────────────────────────────────────────────────────────────────
+Solution:
+- Verify DB_HOST, DB_NAME, DB_USER, DB_PASS in .env
+- Check database user privileges
+- Ensure database exists
+
+Issue: Cron worker not running
+───────────────────────────────────────────────────────────────────────────────
+Solution:
+- Check cron job syntax in hPanel
+- Verify PHP path: which php
+- Check file permissions on scripts/worker.php (should be executable)
+- Check logs: tail -f logs/worker.log
+
+Issue: Webhooks not receiving data
+───────────────────────────────────────────────────────────────────────────────
+Solution:
+- Verify webhook URLs are publicly accessible
+- Check SSL certificate is valid
+- Check webhooks_logs table for entries
+- Use ngrok for local testing
+
+Issue: 500 Internal Server Error
+───────────────────────────────────────────────────────────────────────────────
+Solution:
+- Check PHP error logs in Hostinger hPanel
+- Enable APP_DEBUG=true temporarily
+- Check logs/app.log
+- Verify file permissions
+
+Issue: Analytics events not appearing
+───────────────────────────────────────────────────────────────────────────────
+Solution:
+- Verify ADAPTER_MODE=live (not simulate)
+- Check worker is running and processing jobs
+- Verify credentials are correct (GA4_API_SECRET, META_ACCESS_TOKEN)
+- Check queue_jobs table for errors
+- GA4 has 24-48 hour delay for reports (use Realtime for immediate feedback)
+
+═══════════════════════════════════════════════════════════════════════════════
+ 15. MAINTENANCE
+═══════════════════════════════════════════════════════════════════════════════
+
+Daily:
+───────────────────────────────────────────────────────────────────────────────
+- Check logs/worker.log for errors
+- Monitor queue_jobs for failed jobs
+
+Weekly:
+───────────────────────────────────────────────────────────────────────────────
+- Review webhooks_logs for issues
+- Check database size and optimize if needed
+- Backup database
+
+Monthly:
+───────────────────────────────────────────────────────────────────────────────
+- Update dependencies: composer update
+- Review and rotate secrets
+- Archive old logs
+
+═══════════════════════════════════════════════════════════════════════════════
+ 16. SUPPORT & DOCUMENTATION
+═══════════════════════════════════════════════════════════════════════════════
+
+Project Documentation:
+- INTERNAL_AUDIT.md - Complete audit of changes
+- ARCHITECTURE.md - System architecture overview
+- README.md - General project information
+
+External Documentation:
+- GA4 Measurement Protocol: https://developers.google.com/analytics/devguides/collection/protocol/ga4
+- Meta Conversions API: https://developers.facebook.com/docs/marketing-api/conversions-api
+- WhatsApp Cloud API: https://developers.facebook.com/docs/whatsapp/cloud-api
+- MercadoPago API: https://www.mercadopago.com.br/developers/en/docs
+
+═══════════════════════════════════════════════════════════════════════════════
+ DEPLOYMENT COMPLETE
+═══════════════════════════════════════════════════════════════════════════════
+
+If you've followed all steps, your VisionMetrics installation should be:
+✅ Running on Hostinger
+✅ Processing link clicks with attribution
+✅ Sending events to GA4 and Meta
+✅ Tracking WhatsApp conversations
+✅ Processing MercadoPago payments
+✅ Ready for production use
+
+Next steps:
+1. Create your first trackable link
+2. Set up marketing campaigns
+3. Configure integrations per workspace
+4. Monitor analytics and conversions
+
+═══════════════════════════════════════════════════════════════════════════════
+ END OF DEPLOYMENT GUIDE
+═══════════════════════════════════════════════════════════════════════════════
+
