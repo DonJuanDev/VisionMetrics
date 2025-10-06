@@ -1,72 +1,66 @@
-# VisionMetrics - Apache Configuration
+# VisionMetrics - Root .htaccess
+# Production security configuration
 
-# Enable Rewrite Engine
-RewriteEngine On
-
-# Force HTTPS (ativo em produção)
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-# Short links redirect
-RewriteRule ^l/([a-zA-Z0-9-]+)$ /l.php?slug=$1 [L,QSA]
+# Force HTTPS
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
 
 # Security Headers
 <IfModule mod_headers.c>
-    # Prevent MIME type sniffing
-    Header always set X-Content-Type-Options "nosniff"
+    # HTTP Strict Transport Security (HSTS) - 1 year
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
     
-    # Clickjacking protection
+    # Prevent clickjacking
     Header always set X-Frame-Options "SAMEORIGIN"
     
     # XSS Protection
     Header always set X-XSS-Protection "1; mode=block"
     
+    # Prevent MIME sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    
     # Referrer Policy
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     
-    # Content Security Policy (ajuste conforme necessário)
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://chart.googleapis.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self';"
-    
-    # HSTS (apenas em produção com HTTPS)
-    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    # Content Security Policy (adjust as needed)
+    Header always set Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval' https:; img-src 'self' data: https:; font-src 'self' data: https:;"
 </IfModule>
 
-# Disable directory listing
-Options -Indexes
-
-# Protect sensitive files
-<FilesMatch "\.(env|log|sql|md|txt|json|lock|yml|yaml|sh|gitignore)$">
-    Order allow,deny
-    Deny from all
+# Block access to sensitive files and directories
+<FilesMatch "^\.env">
+    Require all denied
 </FilesMatch>
 
-# Protect specific directories
-RedirectMatch 403 ^/\.git
-RedirectMatch 403 ^/vendor
-RedirectMatch 403 ^/sql
-RedirectMatch 403 ^/tests
-RedirectMatch 403 ^/docker
-RedirectMatch 403 ^/scripts
-RedirectMatch 403 ^/worker
+<FilesMatch "^\.git">
+    Require all denied
+</FilesMatch>
 
-# Cache static assets
-<IfModule mod_expires.c>
-    ExpiresActive On
-    ExpiresByType image/jpg "access plus 1 year"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-    ExpiresByType application/x-javascript "access plus 1 month"
-    ExpiresByType text/javascript "access plus 1 month"
+<FilesMatch "\.(log|sql|md|txt|sh|ps1)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</FilesMatch>
+
+# Block directory listing
+Options -Indexes
+
+# Protect vendor and hidden files
+RedirectMatch 404 /vendor/
+RedirectMatch 404 /\.git/
+RedirectMatch 404 /\.env$
+RedirectMatch 404 /composer\.(json|lock)$
+
+# PHP settings (if allowed)
+<IfModule mod_php7.c>
+    php_flag display_errors Off
+    php_flag log_errors On
+    php_value error_log logs/php-errors.log
 </IfModule>
 
-# Compression
-<IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
-</IfModule>
-
-
-
+# Deny access to specific directories
+<DirectoryMatch "^/.*/\.(git|svn)/">
+    Require all denied
+</DirectoryMatch>
