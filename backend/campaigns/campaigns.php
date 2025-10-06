@@ -120,16 +120,16 @@ foreach ($campaigns as $camp) {
                                         </div>
                                     </div>
 
-                                    <div style="background: white; padding: 16px; border-radius: 8px;">
-                                        <h4 style="margin-bottom: 12px; font-size: 14px; font-weight: 600;">Mensagens Recentes</h4>
+                                    <div style="background: var(--bg-glass); padding: 16px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                        <h4 style="margin-bottom: 12px; font-size: 14px; font-weight: 600; color: var(--text-primary);">Mensagens Recentes</h4>
                                         <?php if (!empty($campaignMessages[$campaign['campaign_name']])): ?>
                                             <?php foreach (array_slice($campaignMessages[$campaign['campaign_name']], 0, 5) as $msg): ?>
-                                                <div style="padding: 12px; background: #F9FAFB; border-radius: 6px; margin-bottom: 8px;">
+                                                <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 6px; margin-bottom: 8px; border: 1px solid rgba(255, 255, 255, 0.05);">
                                                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 6px;">
-                                                        <strong style="font-size: 13px;"><?= htmlspecialchars($msg['contact_name'] ?? $msg['contact_phone']) ?></strong>
-                                                        <span style="font-size: 12px; color: #6B7280;"><?= date('d/m/Y H:i', strtotime($msg['timestamp'])) ?></span>
+                                                        <strong style="font-size: 13px; color: var(--text-primary);"><?= htmlspecialchars($msg['contact_name'] ?? $msg['contact_phone']) ?></strong>
+                                                        <span style="font-size: 12px; color: var(--text-muted);"><?= date('d/m/Y H:i', strtotime($msg['timestamp'])) ?></span>
                                                     </div>
-                                                    <div style="font-size: 13px; color: #4B5563;">
+                                                    <div style="font-size: 13px; color: var(--text-secondary);">
                                                         <strong>Mensagem:</strong> <?= htmlspecialchars(substr($msg['content'], 0, 100)) ?><?= strlen($msg['content']) > 100 ? '...' : '' ?>
                                                     </div>
                                                 </div>

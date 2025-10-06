@@ -268,54 +268,60 @@ $baseUrl = $workspaceInfo['custom_domain_verified'] && $workspaceInfo['custom_do
     </div>
 
     <!-- Modal Create Link -->
-    <div id="modalCreate" style="display:none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
-        <div style="background: white; padding: 32px; border-radius: 12px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
-            <h2 style="margin-bottom: 24px;">Criar Novo Link</h2>
-            <form method="POST">
-                <?= csrf_field() ?>
-                
-                <div class="form-group">
-                    <label>Nome do Link *</label>
-                    <input type="text" name="name" required placeholder="Ex: Campanha Black Friday">
-                </div>
-
-                <div class="form-group">
-                    <label>URL de Destino *</label>
-                    <input type="url" name="destination_url" required placeholder="https://seusite.com/produto">
-                </div>
-
-                <div class="form-group">
-                    <label>Código Curto (slug)</label>
-                    <input type="text" name="slug" placeholder="Deixe vazio para gerar automaticamente" pattern="[a-z0-9-]+">
-                    <small class="help-text">Apenas letras minúsculas, números e hífens</small>
-                </div>
-
-                <div style="margin: 24px 0; padding: 16px; background: #F9FAFB; border-radius: 8px;">
-                    <h4 style="margin-bottom: 16px; color: #374151;">UTM Parameters (Opcional)</h4>
+    <div id="modalCreate" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Criar Novo Link</h2>
+                <button type="button" class="modal-close" onclick="document.getElementById('modalCreate').style.display='none'">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <form method="POST">
+                    <?= csrf_field() ?>
                     
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>UTM Source</label>
-                            <input type="text" name="utm_source" placeholder="Ex: facebook, google, email">
+                    <div class="form-group">
+                        <label>Nome do Link *</label>
+                        <input type="text" name="name" required placeholder="Ex: Campanha Black Friday">
+                    </div>
+
+                    <div class="form-group">
+                        <label>URL de Destino *</label>
+                        <input type="url" name="destination_url" required placeholder="https://seusite.com/produto">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Código Curto (slug)</label>
+                        <input type="text" name="slug" placeholder="Deixe vazio para gerar automaticamente" pattern="[a-z0-9-]+">
+                        <small class="help-text">Apenas letras minúsculas, números e hífens</small>
+                    </div>
+
+                    <div class="modal-section">
+                        <h4>🎯 UTM Parameters (Opcional)</h4>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>UTM Source</label>
+                                <input type="text" name="utm_source" placeholder="Ex: facebook, google, email">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>UTM Medium</label>
+                                <input type="text" name="utm_medium" placeholder="Ex: cpc, social, email">
+                            </div>
                         </div>
                         
                         <div class="form-group">
-                            <label>UTM Medium</label>
-                            <input type="text" name="utm_medium" placeholder="Ex: cpc, social, email">
+                            <label>UTM Campaign</label>
+                            <input type="text" name="utm_campaign" placeholder="Ex: black-friday-2024">
                         </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label>UTM Campaign</label>
-                        <input type="text" name="utm_campaign" placeholder="Ex: black-friday-2024">
-                    </div>
-                </div>
 
-                <div style="display: flex; gap: 12px; margin-top: 24px;">
-                    <button type="submit" name="create_link" class="btn btn-primary" style="flex: 1;">Criar Link</button>
-                    <button type="button" onclick="document.getElementById('modalCreate').style.display='none'" class="btn btn-secondary">Cancelar</button>
-                </div>
-            </form>
+                    <div class="modal-footer">
+                        <button type="submit" name="create_link" class="btn btn-primary" style="flex: 1;">Criar Link</button>
+                        <button type="button" onclick="document.getElementById('modalCreate').style.display='none'" class="btn btn-secondary">Cancelar</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 

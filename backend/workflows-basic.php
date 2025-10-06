@@ -133,47 +133,53 @@ $workflows = $stmt->fetchAll();
     </div>
 
     <!-- Modal Create -->
-    <div id="modalCreate" style="display:none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-        <div style="background: white; padding: 32px; border-radius: 12px; max-width: 600px; width: 90%;">
-            <h2>Nova Automação</h2>
-            <form method="POST">
-                <div class="form-group">
-                    <label>Nome da Automação *</label>
-                    <input type="text" name="name" required placeholder="Ex: Notificar vendedor de lead quente">
-                </div>
+    <div id="modalCreate" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚡ Nova Automação</h2>
+                <button type="button" class="modal-close" onclick="document.getElementById('modalCreate').style.display='none'">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <form method="POST">
+                    <div class="form-group">
+                        <label>Nome da Automação *</label>
+                        <input type="text" name="name" required placeholder="Ex: Notificar vendedor de lead quente">
+                    </div>
 
-                <div class="form-group">
-                    <label>Gatilho (Quando executar) *</label>
-                    <select name="trigger_type" required>
-                        <option value="new_lead">Novo Lead Criado</option>
-                        <option value="score_high">Score Alto (>70)</option>
-                        <option value="sale_confirmed">Venda Confirmada</option>
-                        <option value="stage_changed">Mudança de Etapa</option>
-                        <option value="inactive_days">Lead Inativo X Dias</option>
-                    </select>
-                </div>
+                    <div class="form-group">
+                        <label>Gatilho (Quando executar) *</label>
+                        <select name="trigger_type" required>
+                            <option value="new_lead">Novo Lead Criado</option>
+                            <option value="score_high">Score Alto (>70)</option>
+                            <option value="sale_confirmed">Venda Confirmada</option>
+                            <option value="stage_changed">Mudança de Etapa</option>
+                            <option value="inactive_days">Lead Inativo X Dias</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label>Ação (O que fazer) *</label>
-                    <select name="action_type" required>
-                        <option value="notification">Enviar Notificação</option>
-                        <option value="webhook">Chamar Webhook</option>
-                        <option value="add_tag">Adicionar Tag</option>
-                        <option value="change_stage">Mudar Etapa</option>
-                        <option value="create_task">Criar Tarefa</option>
-                    </select>
-                </div>
+                    <div class="form-group">
+                        <label>Ação (O que fazer) *</label>
+                        <select name="action_type" required>
+                            <option value="notification">Enviar Notificação</option>
+                            <option value="webhook">Chamar Webhook</option>
+                            <option value="add_tag">Adicionar Tag</option>
+                            <option value="change_stage">Mudar Etapa</option>
+                            <option value="create_task">Criar Tarefa</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label>Dados da Ação</label>
-                    <input type="text" name="action_data" placeholder="Ex: URL do webhook ou nome da tag">
-                </div>
+                    <div class="form-group">
+                        <label>Dados da Ação</label>
+                        <input type="text" name="action_data" placeholder="Ex: URL do webhook ou nome da tag">
+                    </div>
 
-                <div style="display: flex; gap: 12px; margin-top: 24px;">
-                    <button type="submit" name="create_workflow" class="btn btn-primary" style="flex: 1;">Criar Automação</button>
-                    <button type="button" onclick="document.getElementById('modalCreate').style.display='none'" class="btn btn-secondary">Cancelar</button>
-                </div>
-            </form>
+                    <div class="modal-footer">
+                        <button type="submit" name="create_workflow" class="btn btn-primary" style="flex: 1;">Criar Automação</button>
+                        <button type="button" onclick="document.getElementById('modalCreate').style.display='none'" class="btn btn-secondary">Cancelar</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 

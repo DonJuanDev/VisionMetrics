@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initAlerts();
     initConfirmButtons();
     initCopyButtons();
+    initModals();
 });
 
 // Auto-hide alerts
@@ -140,13 +141,16 @@ function showToast(message, type = 'success') {
         display: flex;
         align-items: center;
         gap: 12px;
-        background: white;
+        background: rgba(17, 17, 19, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        color: white;
         padding: 16px 20px;
         border-radius: 12px;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         min-width: 300px;
         max-width: 400px;
-        border: 1px solid #E5E7EB;
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-left: 4px solid ${colors[type]};
         animation: slideIn 0.3s ease-out;
     `;
@@ -215,6 +219,35 @@ function timeAgo(timestamp) {
     if (diff < 604800) return `${Math.floor(diff / 86400)} dias atrás`;
     
     return then.toLocaleDateString('pt-BR');
+}
+
+// Modal functionality
+function initModals() {
+    const modals = document.querySelectorAll('.modal-overlay');
+    
+    modals.forEach(modal => {
+        // Close on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.style.display === 'flex') {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Close when clicking outside modal content
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Prevent closing when clicking inside modal content
+        const modalContent = modal.querySelector('.modal-content');
+        if (modalContent) {
+            modalContent.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+    });
 }
 
 // Export to global

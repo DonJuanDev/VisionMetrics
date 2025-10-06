@@ -194,13 +194,13 @@ foreach ($journeyStages as $stage) {
                                             <?php if (!empty($recentByStage[$stage['stage_name']])): ?>
                                                 <div style="display: grid; gap: 12px;">
                                                     <?php foreach (array_slice($recentByStage[$stage['stage_name']], 0, 3) as $conv): ?>
-                                                        <div style="background: white; padding: 12px; border-radius: 6px; border: 1px solid #E5E7EB;">
+                                                        <div style="background: var(--bg-glass); padding: 12px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.1);">
                                                             <div style="display: flex; justify-content: space-between;">
                                                                 <div>
-                                                                    <strong><?= htmlspecialchars($conv['contact_name'] ?? 'Sem nome') ?></strong>
-                                                                    <span style="color: #6B7280; margin-left: 8px;"><?= formatPhone($conv['contact_phone']) ?></span>
+                                                                    <strong style="color: var(--text-primary);"><?= htmlspecialchars($conv['contact_name'] ?? 'Sem nome') ?></strong>
+                                                                    <span style="color: var(--text-muted); margin-left: 8px;"><?= formatPhone($conv['contact_phone']) ?></span>
                                                                 </div>
-                                                                <span style="font-size: 12px; color: #6B7280;"><?= date('d/m/Y H:i', strtotime($conv['created_at'])) ?></span>
+                                                                <span style="font-size: 12px; color: var(--text-muted);"><?= date('d/m/Y H:i', strtotime($conv['created_at'])) ?></span>
                                                             </div>
                                                         </div>
                                                     <?php endforeach; ?>

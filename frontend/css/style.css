@@ -641,6 +641,341 @@ body {
     }
 }
 
+/* Modal Styles */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: var(--bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease;
+    position: relative;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+}
+
+.modal-close {
+    background: var(--bg-glass);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 18px;
+}
+
+.modal-close:hover {
+    background: var(--danger);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    color: var(--text-primary);
+}
+
+.modal-body input,
+.modal-body select,
+.modal-body textarea {
+    background: var(--bg-glass) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-primary) !important;
+}
+
+.modal-body input::placeholder,
+.modal-body textarea::placeholder {
+    color: var(--text-muted) !important;
+}
+
+/* Force dark theme in all modal inputs and elements */
+.modal-content input[type="text"],
+.modal-content input[type="url"],
+.modal-content input[type="email"],
+.modal-content input[type="tel"],
+.modal-content input[type="password"],
+.modal-content input[type="number"],
+.modal-content select,
+.modal-content textarea {
+    background: var(--bg-glass) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-primary) !important;
+}
+
+.modal-content input:focus,
+.modal-content select:focus,
+.modal-content textarea:focus {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: var(--primary) !important;
+}
+
+/* Labels dentro do modal */
+.modal-content label {
+    color: var(--text-primary) !important;
+}
+
+/* FORCE: Remove ANY white/light backgrounds inside modals */
+.modal-overlay *[style*="background"],
+.modal-content *[style*="background"] {
+    background: var(--bg-glass) !important;
+}
+
+.modal-overlay input,
+.modal-overlay select,
+.modal-overlay textarea {
+    background: var(--bg-glass) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Override form-group styles in modal */
+.modal-content .form-group input,
+.modal-content .form-group select,
+.modal-content .form-group textarea {
+    background: var(--bg-glass) !important;
+    color: var(--text-primary) !important;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-section {
+    margin: 24px 0;
+    padding: 20px;
+    background: var(--bg-glass) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px;
+}
+
+.modal-section input,
+.modal-section select,
+.modal-section textarea {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-primary) !important;
+}
+
+.modal-section h4 {
+    margin-bottom: 16px;
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.help-text {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* Scrollbar for modal */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: var(--bg-glass);
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: var(--gradient-primary);
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+/* Info Cards - Dark Theme Override */
+.card-body {
+    color: var(--text-primary);
+}
+
+.card-body h3,
+.card-body h4 {
+    color: var(--text-primary);
+}
+
+.card-body p {
+    color: var(--text-secondary);
+}
+
+.card-body strong {
+    color: var(--text-primary);
+}
+
+.card-body a {
+    color: var(--secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.card-body a:hover {
+    color: var(--primary);
+}
+
+/* Code blocks */
+.code-block {
+    background: var(--bg-glass);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 16px;
+    color: var(--text-secondary);
+    font-family: 'Courier New', monospace;
+    overflow-x: auto;
+}
+
+.code-block::-webkit-scrollbar {
+    height: 6px;
+}
+
+.code-block::-webkit-scrollbar-track {
+    background: var(--bg-glass);
+    border-radius: 3px;
+}
+
+.code-block::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+/* Info sections */
+.info-section {
+    background: var(--bg-glass);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+/* Nested content boxes */
+[style*="background: white"],
+[style*="background:white"] {
+    background: var(--bg-glass) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+[style*="background: #F9FAFB"],
+[style*="background:#F9FAFB"],
+[style*="background: #F3F4F6"],
+[style*="background:#F3F4F6"] {
+    background: var(--bg-glass) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Text color overrides for dark theme */
+[style*="color: #6B7280"],
+[style*="color:#6B7280"],
+[style*="color: #4B5563"],
+[style*="color:#4B5563"],
+[style*="color: #374151"],
+[style*="color:#374151"] {
+    color: var(--text-secondary) !important;
+}
+
+[style*="color: #1F2937"],
+[style*="color:#1F2937"],
+[style*="color: #111827"],
+[style*="color:#111827"] {
+    color: var(--text-primary) !important;
+}
+
+/* Border overrides */
+[style*="border: 1px solid #E5E7EB"],
+[style*="border:1px solid #E5E7EB"] {
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Info boxes with specific backgrounds */
+[style*="background: #EFF6FF"] {
+    background: rgba(59, 130, 246, 0.1) !important;
+    border-left: 4px solid var(--secondary) !important;
+}
+
+[style*="background: #F0FDF4"] {
+    background: rgba(16, 185, 129, 0.1) !important;
+    border-left: 4px solid var(--accent) !important;
+}
+
+[style*="background: #FEF3C7"] {
+    background: rgba(245, 158, 11, 0.1) !important;
+    border-left: 4px solid var(--warning) !important;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .main-content {
@@ -684,6 +1019,15 @@ body {
     .table td {
         padding: 12px 8px;
         font-size: 14px;
+    }
+    
+    .modal-content {
+        padding: 24px;
+        width: 95%;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
     }
 }
 

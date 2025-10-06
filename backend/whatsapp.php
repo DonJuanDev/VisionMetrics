@@ -131,39 +131,46 @@ $whatsappNumbers = $stmt->fetchAll();
     </div>
 
     <!-- Modal Add WhatsApp -->
-    <div id="modalAdd" style="display:none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
-        <div style="background: white; padding: 40px; border-radius: 20px; max-width: 500px; width: 90%; box-shadow: 0 25px 50px rgba(0,0,0,0.3);">
-            <div style="text-align: center; margin-bottom: 32px;">
-                <div style="width: 80px; height: 80px; margin: 0 auto 20px; border-radius: 20px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); display: flex; align-items: center; justify-content: center;">
-                    <svg width="40" height="40" fill="white" viewBox="0 0 24 24">
-                        <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                    </svg>
+    <div id="modalAdd" class="modal-overlay">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--gradient-secondary); display: flex; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
+                            <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2>Conectar WhatsApp</h2>
+                        <p style="font-size: 14px; color: var(--text-muted); margin: 0;">Adicione um número para rastrear conversas</p>
+                    </div>
                 </div>
-                <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">Conectar WhatsApp</h2>
-                <p style="color: #6B7280;">Adicione um número para rastrear conversas</p>
+                <button type="button" class="modal-close" onclick="document.getElementById('modalAdd').style.display='none'">×</button>
             </div>
 
-            <form method="POST">
-                <div class="form-group">
-                    <label>Nome de Exibição *</label>
-                    <input type="text" name="display_name" required placeholder="Ex: Atendimento Principal" autofocus>
-                </div>
+            <div class="modal-body">
+                <form method="POST">
+                    <div class="form-group">
+                        <label>Nome de Exibição *</label>
+                        <input type="text" name="display_name" required placeholder="Ex: Atendimento Principal" autofocus>
+                    </div>
 
-                <div class="form-group">
-                    <label>Número do WhatsApp *</label>
-                    <input type="tel" name="phone_number" required placeholder="Ex: 5511999999999">
-                    <small class="help-text">Formato: Código do país + DDD + Número (somente números)</small>
-                </div>
+                    <div class="form-group">
+                        <label>Número do WhatsApp *</label>
+                        <input type="tel" name="phone_number" required placeholder="Ex: 5511999999999">
+                        <small class="help-text">Formato: Código do país + DDD + Número (somente números)</small>
+                    </div>
 
-                <div style="display: flex; gap: 12px; margin-top: 32px;">
-                    <button type="submit" name="add_whatsapp" class="btn btn-primary" style="flex: 1; padding: 14px;">
-                        Conectar WhatsApp
-                    </button>
-                    <button type="button" onclick="document.getElementById('modalAdd').style.display='none'" class="btn btn-secondary">
-                        Cancelar
-                    </button>
-                </div>
-            </form>
+                    <div class="modal-footer">
+                        <button type="submit" name="add_whatsapp" class="btn btn-primary" style="flex: 1;">
+                            💬 Conectar WhatsApp
+                        </button>
+                        <button type="button" onclick="document.getElementById('modalAdd').style.display='none'" class="btn btn-secondary">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
