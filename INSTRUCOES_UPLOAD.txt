@@ -29,3 +29,5 @@ ORDEM DE UPLOAD:
 1. .env (raiz)
 2. test_db.php (raiz) 
 3. Todos os outros arquivos PHP atualizados
+
+

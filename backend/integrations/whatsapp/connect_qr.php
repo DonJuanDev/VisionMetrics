@@ -98,3 +98,5 @@ try {
     error_log("WhatsApp connect QR error: " . $e->getMessage());
 }
 
+
+

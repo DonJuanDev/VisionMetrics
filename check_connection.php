@@ -130,3 +130,4 @@ echo "<a href='/' style='display: inline-block; background: #10B981; color: whit
 echo "<a href='/backend/register.php' style='display: inline-block; background: #3B82F6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Criar Conta →</a>";
 ?>
 
+

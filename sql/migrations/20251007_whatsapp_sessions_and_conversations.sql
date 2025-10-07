@@ -118,3 +118,5 @@ ALTER TABLE leads ADD INDEX IF NOT EXISTS idx_phone (phone);
 -- Migration complete
 -- =============================================================================
 
+
+

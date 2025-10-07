@@ -440,3 +440,5 @@ Para dúvidas sobre implementação:
 **Ready for:** PRODUCTION  
 **PR:** https://github.com/DonJuanDev/VisionMetrics/pull/new/feature/hostapp-whatsapp-qr
 
+
+

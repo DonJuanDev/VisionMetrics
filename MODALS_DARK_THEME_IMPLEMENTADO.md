@@ -345,3 +345,5 @@ document.getElementById('meuModal').style.display = 'none';
 **Implementado em:** 06/10/2025  
 **Status:** ✅ COMPLETO E TESTADO
 
+
+
