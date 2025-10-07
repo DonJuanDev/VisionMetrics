@@ -470,3 +470,4 @@ function processWhatsAppMessageJob($payload, $workspaceId) {
 
 
 
+
