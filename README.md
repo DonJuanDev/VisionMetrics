@@ -216,3 +216,6 @@ Proprietary - Todos os direitos reservados.
 ---
 
 **Status: PRONTO PARA COMERCIALIZAR! 🚀**
+---
+
+**Maintainer:** [DonJuanDev](https://github.com/DonJuanDev)
